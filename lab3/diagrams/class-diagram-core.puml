@@ -1,0 +1,131 @@
+@startuml ClassDiagram_Core
+!theme plain
+title Диаграмма классов - Основные сущности системы
+
+class User {
+  - id: UUID
+  - email: String
+  - passwordHash: String
+  - firstName: String
+  - lastName: String
+  - phone: String
+  - dateOfBirth: Date
+  - gender: Gender
+  - registrationDate: DateTime
+  - lastLoginDate: DateTime
+  - isActive: Boolean
+  - role: UserRole
+  --
+  + authenticate(password: String): Boolean
+  + updateProfile(data: UserProfileData): void
+  + changePassword(oldPassword: String, newPassword: String): void
+  + deactivate(): void
+}
+
+enum UserRole {
+  GUEST
+  CUSTOMER
+  MANAGER
+  ADMIN
+}
+
+enum Gender {
+  MALE
+  FEMALE
+  OTHER
+}
+
+class Address {
+  - id: UUID
+  - userId: UUID
+  - country: String
+  - city: String
+  - street: String
+  - building: String
+  - apartment: String
+  - postalCode: String
+  - isDefault: Boolean
+  --
+  + getFullAddress(): String
+  + validate(): Boolean
+}
+
+class Product {
+  - id: UUID
+  - name: String
+  - description: String
+  - shortDescription: String
+  - price: Decimal
+  - discountPrice: Decimal
+  - categoryId: UUID
+  - brandId: UUID
+  - sku: String
+  - weight: Decimal
+  - dimensions: String
+  - inStock: Integer
+  - isActive: Boolean
+  - createdDate: DateTime
+  - updatedDate: DateTime
+  --
+  + calculateDiscountedPrice(): Decimal
+  + isAvailable(): Boolean
+  + updateStock(quantity: Integer): void
+  + applyDiscount(discount: Decimal): void
+}
+
+class Category {
+  - id: UUID
+  - name: String
+  - description: String
+  - parentId: UUID
+  - slug: String
+  - sortOrder: Integer
+  - isActive: Boolean
+  --
+  + getSubcategories(): List<Category>
+  + getParentCategory(): Category
+  + getFullPath(): String
+}
+
+class Brand {
+  - id: UUID
+  - name: String
+  - description: String
+  - logoUrl: String
+  - website: String
+  - isActive: Boolean
+  --
+  + getProducts(): List<Product>
+}
+
+class ProductImage {
+  - id: UUID
+  - productId: UUID
+  - imageUrl: String
+  - altText: String
+  - sortOrder: Integer
+  - isMain: Boolean
+  --
+  + getImagePath(): String
+}
+
+class ProductCharacteristic {
+  - id: UUID
+  - productId: UUID
+  - name: String
+  - value: String
+  - unit: String
+  - sortOrder: Integer
+  --
+  + getFormattedValue(): String
+}
+
+' Связи между классами
+User ||--o{ Address : "has addresses"
+Product }o--|| Category : "belongs to"
+Product }o--|| Brand : "belongs to"
+Product ||--o{ ProductImage : "has images"
+Product ||--o{ ProductCharacteristic : "has characteristics"
+Category ||--o{ Category : "has subcategories"
+
+@enduml

@@ -1,0 +1,144 @@
+@startuml ClassDiagram_Order
+!theme plain
+title Диаграмма классов - Заказы и корзина
+
+class Order {
+  - id: UUID
+  - userId: UUID
+  - orderNumber: String
+  - status: OrderStatus
+  - totalAmount: Decimal
+  - discountAmount: Decimal
+  - deliveryAmount: Decimal
+  - paymentMethod: PaymentMethod
+  - deliveryMethod: DeliveryMethod
+  - deliveryAddress: Address
+  - notes: String
+  - createdDate: DateTime
+  - updatedDate: DateTime
+  - deliveryDate: DateTime
+  --
+  + calculateTotal(): Decimal
+  + changeStatus(newStatus: OrderStatus): void
+  + addItem(product: Product, quantity: Integer): void
+  + removeItem(productId: UUID): void
+  + cancel(): void
+  + getTrackingNumber(): String
+}
+
+enum OrderStatus {
+  PENDING
+  CONFIRMED
+  PROCESSING
+  SHIPPED
+  DELIVERED
+  CANCELLED
+  RETURNED
+}
+
+enum PaymentMethod {
+  CASH
+  CARD
+  ONLINE_PAYMENT
+  INSTALLMENT
+}
+
+enum DeliveryMethod {
+  COURIER
+  PICKUP
+  POST
+}
+
+class OrderItem {
+  - id: UUID
+  - orderId: UUID
+  - productId: UUID
+  - quantity: Integer
+  - unitPrice: Decimal
+  - totalPrice: Decimal
+  --
+  + calculateTotal(): Decimal
+  + updateQuantity(newQuantity: Integer): void
+}
+
+class Cart {
+  - id: UUID
+  - userId: UUID
+  - sessionId: String
+  - createdDate: DateTime
+  - updatedDate: DateTime
+  --
+  + addItem(product: Product, quantity: Integer): void
+  + removeItem(productId: UUID): void
+  + updateItemQuantity(productId: UUID, quantity: Integer): void
+  + clear(): void
+  + getTotalAmount(): Decimal
+  + getItemsCount(): Integer
+}
+
+class CartItem {
+  - id: UUID
+  - cartId: UUID
+  - productId: UUID
+  - quantity: Integer
+  - addedDate: DateTime
+  --
+  + calculateSubtotal(): Decimal
+  + updateQuantity(newQuantity: Integer): void
+}
+
+class Payment {
+  - id: UUID
+  - orderId: UUID
+  - amount: Decimal
+  - method: PaymentMethod
+  - status: PaymentStatus
+  - transactionId: String
+  - processedDate: DateTime
+  - notes: String
+  --
+  + process(): Boolean
+  + refund(amount: Decimal): Boolean
+  + getStatus(): PaymentStatus
+}
+
+enum PaymentStatus {
+  PENDING
+  PROCESSING
+  COMPLETED
+  FAILED
+  REFUNDED
+}
+
+class Delivery {
+  - id: UUID
+  - orderId: UUID
+  - method: DeliveryMethod
+  - trackingNumber: String
+  - carrierName: String
+  - status: DeliveryStatus
+  - estimatedDate: DateTime
+  - actualDate: DateTime
+  - address: Address
+  --
+  + updateStatus(newStatus: DeliveryStatus): void
+  + getTrackingInfo(): TrackingInfo
+}
+
+enum DeliveryStatus {
+  PREPARING
+  SHIPPED
+  IN_TRANSIT
+  DELIVERED
+  RETURNED
+}
+
+' Связи между классами
+Order ||--o{ OrderItem : "contains"
+Order ||--o| Payment : "has payment"
+Order ||--o| Delivery : "has delivery"
+Cart ||--o{ CartItem : "contains"
+OrderItem }o--|| Product : "references"
+CartItem }o--|| Product : "references"
+
+@enduml

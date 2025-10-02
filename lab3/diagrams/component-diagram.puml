@@ -1,0 +1,128 @@
+@startuml ComponentDiagram
+!theme plain
+title Диаграмма компонентов - Архитектура системы ТехноМарт
+
+!define RECTANGLE class
+
+package "Frontend Layer" {
+  component [Web Application] as WebApp
+  component [Mobile Application] as MobileApp
+  component [Admin Panel] as AdminPanel
+}
+
+package "API Gateway" {
+  component [API Gateway] as Gateway
+  component [Authentication Service] as AuthService
+  component [Rate Limiter] as RateLimit
+}
+
+package "Application Layer" {
+  package "User Management" {
+    component [User Service] as UserService
+    component [Authentication Controller] as AuthController
+    component [Profile Controller] as ProfileController
+  }
+  
+  package "Product Management" {
+    component [Product Service] as ProductService
+    component [Category Service] as CategoryService
+    component [Product Controller] as ProductController
+    component [Search Service] as SearchService
+  }
+  
+  package "Order Management" {
+    component [Order Service] as OrderService
+    component [Cart Service] as CartService
+    component [Order Controller] as OrderController
+    component [Payment Service] as PaymentService
+  }
+  
+  package "Review Management" {
+    component [Review Service] as ReviewService
+    component [Review Controller] as ReviewController
+    component [Moderation Service] as ModerationService
+  }
+}
+
+package "Infrastructure Layer" {
+  component [Email Service] as EmailService
+  component [File Storage Service] as FileStorage
+  component [Notification Service] as NotificationService
+  component [Logging Service] as LoggingService
+}
+
+package "Data Layer" {
+  component [User Repository] as UserRepo
+  component [Product Repository] as ProductRepo
+  component [Order Repository] as OrderRepo
+  component [Review Repository] as ReviewRepo
+}
+
+package "External Services" {
+  component [Payment Gateway] as PaymentGateway
+  component [Delivery Service] as DeliveryService
+  component [Email Provider] as EmailProvider
+  component [SMS Service] as SMSService
+}
+
+database "PostgreSQL" as MainDB
+database "Redis Cache" as Cache
+database "Elasticsearch" as SearchDB
+database "File Storage" as Files
+
+' Frontend connections
+WebApp --> Gateway : HTTPS/REST
+MobileApp --> Gateway : HTTPS/REST
+AdminPanel --> Gateway : HTTPS/REST
+
+' API Gateway connections
+Gateway --> AuthService
+Gateway --> RateLimit
+Gateway --> AuthController
+Gateway --> ProductController
+Gateway --> OrderController
+Gateway --> ReviewController
+
+' Service connections
+AuthController --> UserService
+ProfileController --> UserService
+ProductController --> ProductService
+ProductController --> CategoryService
+ProductController --> SearchService
+OrderController --> OrderService
+OrderController --> CartService
+ReviewController --> ReviewService
+ReviewController --> ModerationService
+
+' Repository connections
+UserService --> UserRepo
+ProductService --> ProductRepo
+CategoryService --> ProductRepo
+OrderService --> OrderRepo
+CartService --> OrderRepo
+ReviewService --> ReviewRepo
+
+' Infrastructure connections
+UserService --> EmailService
+OrderService --> PaymentService
+OrderService --> NotificationService
+ReviewService --> ModerationService
+ProductService --> FileStorage
+
+' External service connections
+PaymentService --> PaymentGateway
+EmailService --> EmailProvider
+NotificationService --> SMSService
+OrderService --> DeliveryService
+
+' Database connections
+UserRepo --> MainDB
+ProductRepo --> MainDB
+OrderRepo --> MainDB
+ReviewRepo --> MainDB
+SearchService --> SearchDB
+CartService --> Cache
+AuthService --> Cache
+FileStorage --> Files
+
+@enduml

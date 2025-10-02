@@ -1,0 +1,190 @@
+@startuml PackageDiagram
+!theme plain
+title Диаграмма пакетов - Структура системы ТехноМарт
+
+package "com.technomart" {
+  
+  package "presentation" {
+    package "web" {
+      package "controllers" {
+        class ProductController
+        class UserController
+        class OrderController
+        class ReviewController
+      }
+      
+      package "dto" {
+        package "request" {
+          class ProductCreateRequest
+          class UserRegistrationRequest
+          class OrderCreateRequest
+        }
+        
+        package "response" {
+          class ProductResponse
+          class UserResponse
+          class OrderResponse
+        }
+      }
+      
+      package "config" {
+        class WebConfig
+        class SecurityConfig
+        class SwaggerConfig
+      }
+    }
+    
+    package "mobile" {
+      package "api" {
+        class MobileProductController
+        class MobileUserController
+        class MobileOrderController
+      }
+    }
+  }
+  
+  package "business" {
+    package "services" {
+      interface ProductService
+      interface UserService
+      interface OrderService
+      interface ReviewService
+      
+      package "impl" {
+        class ProductServiceImpl
+        class UserServiceImpl
+        class OrderServiceImpl
+        class ReviewServiceImpl
+      }
+    }
+    
+    package "domain" {
+      package "entities" {
+        class Product
+        class User
+        class Order
+        class Review
+        class Category
+        class Brand
+      }
+      
+      package "valueobjects" {
+        class Money
+        class Address
+        class ProductCharacteristic
+        class Rating
+      }
+      
+      package "enums" {
+        enum OrderStatus
+        enum UserRole
+        enum PaymentMethod
+        enum DeliveryMethod
+      }
+    }
+    
+    package "exceptions" {
+      class BusinessException
+      class ProductNotFoundException
+      class UserNotFoundException
+      class OrderNotFoundException
+    }
+  }
+  
+  package "infrastructure" {
+    package "persistence" {
+      package "repositories" {
+        interface ProductRepository
+        interface UserRepository
+        interface OrderRepository
+        interface ReviewRepository
+        
+        package "jpa" {
+          class JpaProductRepository
+          class JpaUserRepository
+          class JpaOrderRepository
+          class JpaReviewRepository
+        }
+      }
+      
+      package "entities" {
+        class ProductEntity
+        class UserEntity
+        class OrderEntity
+        class ReviewEntity
+      }
+    }
+    
+    package "external" {
+      package "payment" {
+        interface PaymentGateway
+        class StripePaymentGateway
+        class PayPalPaymentGateway
+      }
+      
+      package "delivery" {
+        interface DeliveryService
+        class DhlDeliveryService
+        class LocalDeliveryService
+      }
+      
+      package "notification" {
+        interface EmailService
+        interface SMSService
+        class SmtpEmailService
+        class TwilioSMSService
+      }
+    }
+    
+    package "search" {
+      interface SearchEngine
+      class ElasticsearchEngine
+    }
+    
+    package "cache" {
+      interface CacheService
+      class RedisCacheService
+    }
+    
+    package "security" {
+      class JwtTokenProvider
+      class PasswordEncoder
+      class AuthenticationService
+    }
+  }
+  
+  package "shared" {
+    package "utils" {
+      class DateUtils
+      class ValidationUtils
+      class StringUtils
+    }
+    
+    package "constants" {
+      class ApplicationConstants
+      class ErrorMessages
+      class ValidationMessages
+    }
+    
+    package "config" {
+      class DatabaseConfig
+      class CacheConfig
+      class SecurityConfig
+    }
+  }
+}
+
+' Зависимости между пакетами
+presentation ..> business : uses
+business ..> infrastructure : uses
+infrastructure ..> shared : uses
+presentation ..> shared : uses
+
+' Детальные зависимости
+controllers ..> services
+services ..> domain.entities
+services ..> repositories
+repositories.jpa ..> persistence.entities
+external ..> domain.entities
+
+@enduml

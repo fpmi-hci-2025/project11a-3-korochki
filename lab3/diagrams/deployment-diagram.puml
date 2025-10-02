@@ -1,0 +1,175 @@
+@startuml DeploymentDiagram
+!theme plain
+title Диаграмма развертывания - Инфраструктура ТехноМарт
+
+node "Load Balancer" as LB {
+  artifact "Nginx" as nginx
+}
+
+node "Web Server 1" as WS1 {
+  artifact "Frontend App" as frontend1
+  artifact "Admin Panel" as admin1
+}
+
+node "Web Server 2" as WS2 {
+  artifact "Frontend App" as frontend2
+  artifact "Admin Panel" as admin2
+}
+
+node "API Gateway" as Gateway {
+  artifact "Kong/Zuul" as apigateway
+  artifact "Rate Limiter" as ratelimit
+  artifact "Auth Service" as authsvc
+}
+
+node "Application Server 1" as AS1 {
+  artifact "TechnoMart API" as api1
+  artifact "JVM" as jvm1
+}
+
+node "Application Server 2" as AS2 {
+  artifact "TechnoMart API" as api2
+  artifact "JVM" as jvm2
+}
+
+node "Application Server 3" as AS3 {
+  artifact "TechnoMart API" as api3
+  artifact "JVM" as jvm3
+}
+
+node "Cache Cluster" as CacheCluster {
+  node "Redis Master" as RedisMaster {
+    artifact "Redis" as redis_master
+  }
+  
+  node "Redis Slave 1" as RedisSlave1 {
+    artifact "Redis" as redis_slave1
+  }
+  
+  node "Redis Slave 2" as RedisSlave2 {
+    artifact "Redis" as redis_slave2
+  }
+}
+
+node "Database Cluster" as DBCluster {
+  node "PostgreSQL Master" as PGMaster {
+    artifact "PostgreSQL" as pg_master
+    artifact "Database" as db_master
+  }
+  
+  node "PostgreSQL Slave 1" as PGSlave1 {
+    artifact "PostgreSQL" as pg_slave1
+    artifact "Database" as db_slave1
+  }
+  
+  node "PostgreSQL Slave 2" as PGSlave2 {
+    artifact "PostgreSQL" as pg_slave2
+    artifact "Database" as db_slave2
+  }
+}
+
+node "Search Cluster" as SearchCluster {
+  node "Elasticsearch Node 1" as ES1 {
+    artifact "Elasticsearch" as es1
+  }
+  
+  node "Elasticsearch Node 2" as ES2 {
+    artifact "Elasticsearch" as es2
+  }
+  
+  node "Elasticsearch Node 3" as ES3 {
+    artifact "Elasticsearch" as es3
+  }
+}
+
+node "File Storage" as FileStorage {
+  artifact "MinIO/S3" as storage
+  artifact "CDN" as cdn
+}
+
+node "Monitoring" as Monitoring {
+  artifact "Prometheus" as prometheus
+  artifact "Grafana" as grafana
+  artifact "ELK Stack" as elk
+}
+
+node "External Services" as External {
+  cloud "Payment Gateway" as PaymentGW
+  cloud "Delivery Services" as DeliveryServices
+  cloud "Email Service" as EmailService
+  cloud "SMS Service" as SMSService
+}
+
+' Connections
+LB --> WS1 : HTTPS
+LB --> WS2 : HTTPS
+
+WS1 --> Gateway : HTTPS/REST
+WS2 --> Gateway : HTTPS/REST
+
+Gateway --> AS1 : HTTP/REST
+Gateway --> AS2 : HTTP/REST
+Gateway --> AS3 : HTTP/REST
+
+AS1 --> CacheCluster : TCP/6379
+AS2 --> CacheCluster : TCP/6379
+AS3 --> CacheCluster : TCP/6379
+
+AS1 --> DBCluster : TCP/5432
+AS2 --> DBCluster : TCP/5432
+AS3 --> DBCluster : TCP/5432
+
+AS1 --> SearchCluster : HTTP/9200
+AS2 --> SearchCluster : HTTP/9200
+AS3 --> SearchCluster : HTTP/9200
+
+AS1 --> FileStorage : HTTP/S3
+AS2 --> FileStorage : HTTP/S3
+AS3 --> FileStorage : HTTP/S3
+
+AS1 --> External : HTTPS
+AS2 --> External : HTTPS
+AS3 --> External : HTTPS
+
+RedisMaster --> RedisSlave1 : Replication
+RedisMaster --> RedisSlave2 : Replication
+
+PGMaster --> PGSlave1 : Streaming Replication
+PGMaster --> PGSlave2 : Streaming Replication
+
+AS1 --> Monitoring : Metrics
+AS2 --> Monitoring : Metrics
+AS3 --> Monitoring : Metrics
+Gateway --> Monitoring : Metrics
+DBCluster --> Monitoring : Metrics
+CacheCluster --> Monitoring : Metrics
+
+note right of LB
+  - SSL Termination
+  - Load Balancing
+  - Health Checks
+  - DDoS Protection
+end note
+
+note right of Gateway
+  - Authentication
+  - Rate Limiting
+  - Request Routing
+  - API Versioning
+end note
+
+note right of CacheCluster
+  - Session Storage
+  - Query Caching
+  - Real-time Data
+  - High Availability
+end note
+
+note right of DBCluster
+  - Master-Slave Setup
+  - Automatic Failover
+  - Read Replicas
+  - Backup & Recovery
+end note
+
+@enduml

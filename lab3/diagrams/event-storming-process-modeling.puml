@@ -1,0 +1,126 @@
+@startuml EventStorming_ProcessModeling
+!theme plain
+title Event Storming - Моделирование процессов
+
+!define DOMAIN_EVENT_COLOR Orange
+!define COMMAND_COLOR LightBlue
+!define ACTOR_COLOR Yellow
+!define POLICY_COLOR Purple
+!define AGGREGATE_COLOR LightGreen
+!define READ_MODEL_COLOR Green
+
+' Агрегаты (Aggregates) - Светло-зеленый
+package "User Aggregate" as UserAggregate AGGREGATE_COLOR {
+  rectangle "Зарегистрировать\nпользователя" as RegisterUserCmd COMMAND_COLOR
+  rectangle "Пользователь\nзарегистрирован" as UserRegisteredEvt DOMAIN_EVENT_COLOR
+  rectangle "Авторизовать\nпользователя" as LoginUserCmd COMMAND_COLOR
+  rectangle "Пользователь\nавторизован" as UserLoggedInEvt DOMAIN_EVENT_COLOR
+}
+
+package "Product Catalog Aggregate" as ProductAggregate AGGREGATE_COLOR {
+  rectangle "Добавить товар" as AddProductCmd COMMAND_COLOR
+  rectangle "Товар добавлен" as ProductAddedEvt DOMAIN_EVENT_COLOR
+  rectangle "Обновить товар" as UpdateProductCmd COMMAND_COLOR
+  rectangle "Товар обновлен" as ProductUpdatedEvt DOMAIN_EVENT_COLOR
+  rectangle "Найти товары" as SearchProductsCmd COMMAND_COLOR
+  rectangle "Товары найдены" as ProductsFoundEvt DOMAIN_EVENT_COLOR
+}
+
+package "Shopping Cart Aggregate" as CartAggregate AGGREGATE_COLOR {
+  rectangle "Добавить в корзину" as AddToCartCmd COMMAND_COLOR
+  rectangle "Товар добавлен\nв корзину" as AddedToCartEvt DOMAIN_EVENT_COLOR
+  rectangle "Удалить из корзины" as RemoveFromCartCmd COMMAND_COLOR
+  rectangle "Товар удален\nиз корзины" as RemovedFromCartEvt DOMAIN_EVENT_COLOR
+  rectangle "Очистить корзину" as ClearCartCmd COMMAND_COLOR
+  rectangle "Корзина очищена" as CartClearedEvt DOMAIN_EVENT_COLOR
+}
+
+package "Order Aggregate" as OrderAggregate AGGREGATE_COLOR {
+  rectangle "Создать заказ" as CreateOrderCmd COMMAND_COLOR
+  rectangle "Заказ создан" as OrderCreatedEvt DOMAIN_EVENT_COLOR
+  rectangle "Подтвердить заказ" as ConfirmOrderCmd COMMAND_COLOR
+  rectangle "Заказ подтвержден" as OrderConfirmedEvt DOMAIN_EVENT_COLOR
+  rectangle "Отменить заказ" as CancelOrderCmd COMMAND_COLOR
+  rectangle "Заказ отменен" as OrderCancelledEvt DOMAIN_EVENT_COLOR
+}
+
+package "Payment Aggregate" as PaymentAggregate AGGREGATE_COLOR {
+  rectangle "Обработать платеж" as ProcessPaymentCmd COMMAND_COLOR
+  rectangle "Платеж обработан" as PaymentProcessedEvt DOMAIN_EVENT_COLOR
+  rectangle "Платеж отклонен" as PaymentRejectedEvt DOMAIN_EVENT_COLOR
+}
+
+package "Inventory Aggregate" as InventoryAggregate AGGREGATE_COLOR {
+  rectangle "Зарезервировать\nтовары" as ReserveProductsCmd COMMAND_COLOR
+  rectangle "Товары\nзарезервированы" as ProductsReservedEvt DOMAIN_EVENT_COLOR
+  rectangle "Освободить резерв" as ReleaseReservationCmd COMMAND_COLOR
+  rectangle "Резерв освобожден" as ReservationReleasedEvt DOMAIN_EVENT_COLOR
+}
+
+package "Shipping Aggregate" as ShippingAggregate AGGREGATE_COLOR {
+  rectangle "Отправить заказ" as ShipOrderCmd COMMAND_COLOR
+  rectangle "Заказ отправлен" as OrderShippedEvt DOMAIN_EVENT_COLOR
+  rectangle "Доставить заказ" as DeliverOrderCmd COMMAND_COLOR
+  rectangle "Заказ доставлен" as OrderDeliveredEvt DOMAIN_EVENT_COLOR
+}
+
+package "Review Aggregate" as ReviewAggregate AGGREGATE_COLOR {
+  rectangle "Написать отзыв" as WriteReviewCmd COMMAND_COLOR
+  rectangle "Отзыв написан" as ReviewSubmittedEvt DOMAIN_EVENT_COLOR
+  rectangle "Одобрить отзыв" as ApproveReviewCmd COMMAND_COLOR
+  rectangle "Отзыв одобрен" as ReviewApprovedEvt DOMAIN_EVENT_COLOR
+  rectangle "Отклонить отзыв" as RejectReviewCmd COMMAND_COLOR
+  rectangle "Отзыв отклонен" as ReviewRejectedEvt DOMAIN_EVENT_COLOR
+}
+
+' Модели чтения (Read Models) - Зеленый
+rectangle "Каталог товаров" as ProductCatalogView READ_MODEL_COLOR
+rectangle "Корзина пользователя" as UserCartView READ_MODEL_COLOR
+rectangle "История заказов" as OrderHistoryView READ_MODEL_COLOR
+rectangle "Детали заказа" as OrderDetailsView READ_MODEL_COLOR
+rectangle "Отзывы товара" as ProductReviewsView READ_MODEL_COLOR
+rectangle "Рейтинги товаров" as ProductRatingsView READ_MODEL_COLOR
+
+' Актеры
+rectangle "Покупатель" as Customer ACTOR_COLOR
+rectangle "Администратор" as Admin ACTOR_COLOR
+rectangle "Менеджер" as Manager ACTOR_COLOR
+
+' Политики автоматизации
+rectangle "При создании заказа\nзарезервировать товары" as AutoReservePolicy POLICY_COLOR
+rectangle "При успешном платеже\nподтвердить заказ" as AutoConfirmPolicy POLICY_COLOR
+rectangle "При отмене заказа\nосвободить резерв" as AutoReleasePolicy POLICY_COLOR
+rectangle "При одобрении отзыва\nобновить рейтинг" as AutoUpdateRatingPolicy POLICY_COLOR
+
+' Связи между агрегатами через события
+OrderCreatedEvt --> AutoReservePolicy
+AutoReservePolicy --> ReserveProductsCmd
+
+PaymentProcessedEvt --> AutoConfirmPolicy
+AutoConfirmPolicy --> ConfirmOrderCmd
+
+OrderCancelledEvt --> AutoReleasePolicy
+AutoReleasePolicy --> ReleaseReservationCmd
+
+ReviewApprovedEvt --> AutoUpdateRatingPolicy
+AutoUpdateRatingPolicy --> ProductRatingsView
+
+' Связи с моделями чтения
+ProductAddedEvt --> ProductCatalogView
+ProductUpdatedEvt --> ProductCatalogView
+AddedToCartEvt --> UserCartView
+RemovedFromCartEvt --> UserCartView
+OrderCreatedEvt --> OrderHistoryView
+OrderConfirmedEvt --> OrderDetailsView
+ReviewApprovedEvt --> ProductReviewsView
+
+' Связи актеров с командами
+Customer --> CreateOrderCmd
+Customer --> AddToCartCmd
+Customer --> WriteReviewCmd
+Admin --> AddProductCmd
+Admin --> UpdateProductCmd
+Manager --> ApproveReviewCmd
+Manager --> ShipOrderCmd
+
+@enduml

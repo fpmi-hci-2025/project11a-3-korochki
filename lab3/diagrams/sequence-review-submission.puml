@@ -1,0 +1,90 @@
+@startuml SequenceDiagram_ReviewSubmission
+!theme plain
+title Диаграмма последовательности - Отправка отзыва
+
+actor Customer as C
+participant "Product Page" as PP
+participant "ReviewController" as RC
+participant "ReviewService" as RS
+participant "OrderService" as OS
+participant "ReviewRepository" as RR
+participant "EmailService" as ES
+database "Database" as DB
+
+C -> PP: Нажать "Написать отзыв"
+activate PP
+
+PP -> PP: Проверить авторизацию
+PP -> OS: checkPurchaseHistory(userId, productId)
+activate OS
+OS -> DB: SELECT FROM orders JOIN order_items
+DB --> OS: purchaseHistory
+OS --> PP: hasPurchased
+deactivate OS
+
+alt Пользователь не покупал товар
+    PP --> C: Показать сообщение о необходимости покупки
+else Пользователь покупал товар
+    PP -> PP: Показать форму отзыва
+    C -> PP: Заполнить отзыв (рейтинг, текст, фото)
+    C -> PP: Нажать "Отправить отзыв"
+    
+    PP -> RC: POST /api/reviews
+    activate RC
+    
+    RC -> RC: Валидация данных отзыва
+    RC -> RS: createReview(reviewData)
+    activate RS
+    
+    ' Проверка на дублирование отзывов
+    RS -> RR: findByUserAndProduct(userId, productId)
+    activate RR
+    RR -> DB: SELECT FROM reviews WHERE user_id = ? AND product_id = ?
+    DB --> RR: existingReview
+    RR --> RS: review or null
+    deactivate RR
+    
+    alt Отзыв уже существует
+        RS --> RC: throw ReviewAlreadyExistsException
+        RC --> PP: HTTP 409 Conflict
+        PP --> C: Показать ошибку о существующем отзыве
+    else Отзыв новый
+        ' Сохранение отзыва
+        RS -> RR: save(review)
+        activate RR
+        RR -> DB: INSERT INTO reviews
+        DB --> RR: reviewId
+        RR --> RS: savedReview
+        deactivate RR
+        
+        ' Сохранение изображений (если есть)
+        alt Есть изображения
+            loop Для каждого изображения
+                RS -> DB: INSERT INTO review_images
+                DB --> RS: imageId
+            end
+        end
+        
+        ' Обновление рейтинга продукта
+        RS -> RS: updateProductRating(productId)
+        RS -> DB: UPDATE product_ratings
+        
+        ' Уведомление модераторов
+        RS -> ES: notifyModerators(review)
+        activate ES
+        ES -> ES: Создание уведомления
+        ES --> RS: sent
+        deactivate ES
+        
+        RS --> RC: createdReview
+        deactivate RS
+        
+        RC --> PP: HTTP 201 Created + review
+        deactivate RC
+        
+        PP --> C: Показать сообщение об успешной отправке
+        deactivate PP
+    end
+end
+
+@enduml

@@ -1,0 +1,138 @@
+@startuml SequenceDiagram_AdminProductManagement
+!theme plain
+title Диаграмма последовательности - Управление товарами (Администратор)
+
+actor Admin as A
+participant "Admin Panel" as AP
+participant "ProductController" as PC
+participant "ProductService" as PS
+participant "CategoryService" as CS
+participant "ImageService" as IS
+participant "SearchEngine" as SE
+database "Database" as DB
+
+A -> AP: Перейти в "Управление товарами"
+activate AP
+
+AP -> PC: GET /api/admin/products
+activate PC
+PC -> PS: getAllProducts(pagination, filters)
+activate PS
+PS -> DB: SELECT FROM products
+DB --> PS: products
+PS --> PC: productList
+deactivate PS
+PC --> AP: HTTP 200 OK + products
+deactivate PC
+
+AP -> AP: Отобразить список товаров
+A -> AP: Нажать "Добавить товар"
+
+AP -> AP: Показать форму создания товара
+A -> AP: Заполнить данные товара
+A -> AP: Загрузить изображения
+A -> AP: Нажать "Сохранить"
+
+AP -> PC: POST /api/admin/products
+activate PC
+
+PC -> PC: Валидация данных товара
+PC -> PS: createProduct(productData)
+activate PS
+
+' Проверка категории
+PS -> CS: validateCategory(categoryId)
+activate CS
+CS -> DB: SELECT FROM categories WHERE id = ?
+DB --> CS: category
+CS --> PS: categoryExists
+deactivate CS
+
+alt Категория не существует
+    PS --> PC: throw InvalidCategoryException
+    PC --> AP: HTTP 400 Bad Request
+    AP --> A: Показать ошибку валидации
+else Категория существует
+    ' Создание товара
+    PS -> DB: INSERT INTO products
+    DB --> PS: productId
+    
+    ' Сохранение характеристик
+    loop Для каждой характеристики
+        PS -> DB: INSERT INTO product_characteristics
+        DB --> PS: characteristicId
+    end
+    
+    ' Обработка изображений
+    PS -> IS: processImages(productId, images)
+    activate IS
+    loop Для каждого изображения
+        IS -> IS: Оптимизация изображения
+        IS -> IS: Сохранение файла
+        IS -> DB: INSERT INTO product_images
+        DB --> IS: imageId
+    end
+    IS --> PS: processedImages
+    deactivate IS
+    
+    ' Индексация для поиска
+    PS -> SE: indexProduct(product)
+    activate SE
+    SE -> SE: Создание поискового индекса
+    SE --> PS: indexed
+    deactivate SE
+    
+    PS --> PC: createdProduct
+    deactivate PS
+    
+    PC --> AP: HTTP 201 Created + product
+    deactivate PC
+    
+    AP --> A: Показать сообщение об успешном создании
+    deactivate AP
+end
+
+' Редактирование товара
+A -> AP: Выбрать товар для редактирования
+activate AP
+A -> AP: Нажать "Редактировать"
+
+AP -> PC: GET /api/admin/products/{id}
+activate PC
+PC -> PS: getProductById(id)
+activate PS
+PS -> DB: SELECT FROM products WHERE id = ?
+DB --> PS: product
+PS --> PC: product
+deactivate PS
+PC --> AP: HTTP 200 OK + product
+deactivate PC
+
+AP -> AP: Показать форму редактирования
+A -> AP: Изменить данные
+A -> AP: Нажать "Сохранить изменения"
+
+AP -> PC: PUT /api/admin/products/{id}
+activate PC
+PC -> PS: updateProduct(id, productData)
+activate PS
+
+PS -> DB: UPDATE products SET ... WHERE id = ?
+DB --> PS: updated
+
+' Обновление поискового индекса
+PS -> SE: reindexProduct(product)
+activate SE
+SE -> SE: Обновление индекса
+SE --> PS: reindexed
+deactivate SE
+
+PS --> PC: updatedProduct
+deactivate PS
+PC --> AP: HTTP 200 OK + product
+deactivate PC
+
+AP --> A: Показать сообщение об успешном обновлении
+deactivate AP
+
+@enduml

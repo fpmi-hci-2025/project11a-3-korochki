@@ -1,0 +1,109 @@
+@startuml UseCaseDiagram
+!theme plain
+title Диаграмма вариантов использования - ТехноМарт
+
+left to right direction
+
+actor "Гость" as Guest
+actor "Покупатель" as Customer
+actor "Администратор" as Admin
+actor "Менеджер" as Manager
+actor "Курьер" as Courier
+
+package "Система ТехноМарт" {
+  
+  package "Каталог товаров" {
+    usecase "Просмотр каталога" as UC1
+    usecase "Поиск товаров" as UC2
+    usecase "Фильтрация товаров" as UC3
+    usecase "Просмотр карточки товара" as UC4
+    usecase "Сравнение товаров" as UC5
+  }
+  
+  package "Управление заказами" {
+    usecase "Добавление в корзину" as UC6
+    usecase "Оформление заказа" as UC7
+    usecase "Отслеживание заказа" as UC8
+    usecase "Отмена заказа" as UC9
+    usecase "Обработка заказа" as UC10
+  }
+  
+  package "Пользователи" {
+    usecase "Регистрация" as UC11
+    usecase "Авторизация" as UC12
+    usecase "Управление профилем" as UC13
+    usecase "Просмотр истории заказов" as UC14
+  }
+  
+  package "Отзывы и рейтинги" {
+    usecase "Чтение отзывов" as UC15
+    usecase "Написание отзыва" as UC16
+    usecase "Модерация отзывов" as UC17
+  }
+  
+  package "Администрирование" {
+    usecase "Управление каталогом" as UC18
+    usecase "Управление пользователями" as UC19
+    usecase "Настройка системы" as UC20
+    usecase "Просмотр аналитики" as UC21
+  }
+  
+  package "Доставка" {
+    usecase "Выбор способа доставки" as UC22
+    usecase "Отслеживание доставки" as UC23
+    usecase "Подтверждение получения" as UC24
+  }
+}
+
+' Связи для Гостя
+Guest --> UC1
+Guest --> UC2
+Guest --> UC3
+Guest --> UC4
+Guest --> UC5
+Guest --> UC15
+Guest --> UC11
+
+' Связи для Покупателя (наследует от Гостя)
+Customer --> UC1
+Customer --> UC2
+Customer --> UC3
+Customer --> UC4
+Customer --> UC5
+Customer --> UC15
+Customer --> UC6
+Customer --> UC7
+Customer --> UC8
+Customer --> UC9
+Customer --> UC12
+Customer --> UC13
+Customer --> UC14
+Customer --> UC16
+Customer --> UC22
+Customer --> UC23
+Customer --> UC24
+
+' Связи для Администратора
+Admin --> UC18
+Admin --> UC19
+Admin --> UC20
+Admin --> UC21
+Admin --> UC17
+Admin --> UC10
+
+' Связи для Менеджера
+Manager --> UC10
+Manager --> UC17
+Manager --> UC21
+
+' Связи для Курьера
+Courier --> UC23
+Courier --> UC24
+
+' Расширения и включения
+UC7 ..> UC6 : <<include>>
+UC8 ..> UC7 : <<include>>
+UC16 ..> UC14 : <<extend>>
+UC9 ..> UC8 : <<extend>>
+
+@enduml

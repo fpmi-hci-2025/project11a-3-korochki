@@ -1,0 +1,126 @@
+@startuml SequenceDiagram_OrderCreation
+!theme plain
+title Диаграмма последовательности - Создание заказа
+
+actor Customer as C
+participant "Checkout Page" as CP
+participant "OrderController" as OC
+participant "OrderService" as OS
+participant "CartService" as CS
+participant "ProductService" as PS
+participant "PaymentService" as PayS
+participant "DeliveryService" as DS
+participant "EmailService" as ES
+database "Database" as DB
+
+C -> CP: Нажать "Оформить заказ"
+activate CP
+
+CP -> OC: POST /api/orders
+activate OC
+
+OC -> OS: createOrder(orderData)
+activate OS
+
+' Проверка корзины
+OS -> CS: getCart(userId)
+activate CS
+CS -> DB: SELECT cart items
+DB --> CS: cartItems
+CS --> OS: cart
+deactivate CS
+
+alt Корзина пуста
+    OS --> OC: throw EmptyCartException
+    OC --> CP: HTTP 400 Bad Request
+    CP --> C: Показать ошибку
+else Корзина не пуста
+    ' Проверка наличия товаров
+    loop Для каждого товара в корзине
+        OS -> PS: checkAvailability(productId, quantity)
+        activate PS
+        PS -> DB: SELECT stock FROM products
+        DB --> PS: stock
+        PS --> OS: availability
+        deactivate PS
+    end
+    
+    alt Товары недоступны
+        OS --> OC: throw ProductUnavailableException
+        OC --> CP: HTTP 409 Conflict
+        CP --> C: Показать недоступные товары
+    else Все товары доступны
+        ' Резервирование товаров
+        OS -> PS: reserveProducts(orderItems)
+        activate PS
+        PS -> DB: UPDATE products SET reserved_stock
+        DB --> PS: success
+        PS --> OS: reserved
+        deactivate PS
+        
+        ' Создание заказа
+        OS -> DB: INSERT INTO orders
+        DB --> OS: orderId
+        
+        ' Создание элементов заказа
+        loop Для каждого товара
+            OS -> DB: INSERT INTO order_items
+            DB --> OS: success
+        end
+        
+        ' Обработка платежа (если онлайн)
+        alt Онлайн оплата
+            OS -> PayS: processPayment(orderData)
+            activate PayS
+            PayS -> PayS: Обработка платежа
+            PayS --> OS: paymentResult
+            deactivate PayS
+            
+            alt Платеж неуспешен
+                OS -> PS: releaseReservation(orderItems)
+                activate PS
+                PS -> DB: UPDATE products SET reserved_stock
+                PS --> OS: released
+                deactivate PS
+                OS --> OC: throw PaymentFailedException
+                OC --> CP: HTTP 402 Payment Required
+                CP --> C: Показать ошибку оплаты
+            else Платеж успешен
+                OS -> DB: UPDATE orders SET payment_status = 'PAID'
+            end
+        end
+        
+        ' Настройка доставки
+        OS -> DS: scheduleDelivery(orderData)
+        activate DS
+        DS -> DS: Расчет времени доставки
+        DS -> DB: INSERT INTO deliveries
+        DS --> OS: deliveryInfo
+        deactivate DS
+        
+        ' Очистка корзины
+        OS -> CS: clearCart(userId)
+        activate CS
+        CS -> DB: DELETE FROM cart_items
+        CS --> OS: cleared
+        deactivate CS
+        
+        ' Отправка подтверждения
+        OS -> ES: sendOrderConfirmation(order)
+        activate ES
+        ES -> ES: Создание email
+        ES --> OS: sent
+        deactivate ES
+        
+        OS --> OC: createdOrder
+        deactivate OS
+        
+        OC --> CP: HTTP 201 Created + order
+        deactivate OC
+        
+        CP --> C: Показать подтверждение заказа
+        deactivate CP
+    end
+end
+
+@enduml

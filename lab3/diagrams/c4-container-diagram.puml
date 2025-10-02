@@ -1,0 +1,77 @@
+@startuml C4_Container
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+
+!define DEVICONS https://raw.githubusercontent.com/tupadr3/plantuml-icon-font-sprites/master/devicons
+!define FONTAWESOME https://raw.githubusercontent.com/tupadr3/plantuml-icon-font-sprites/master/font-awesome-5
+
+!include DEVICONS/react.puml
+!include DEVICONS/android.puml
+!include DEVICONS/nodejs.puml
+!include DEVICONS/postgresql.puml
+!include DEVICONS/redis.puml
+!include FONTAWESOME/users.puml
+
+title Диаграмма контейнеров системы ТехноМарт
+
+Person(customer, "Покупатель", $sprite="users")
+Person(admin, "Администратор", $sprite="users")
+
+System_Boundary(technomart, "ТехноМарт") {
+    Container(web_app, "Веб-приложение", "React, TypeScript", "Предоставляет функциональность ТехноМарт через веб-браузер", $sprite="react")
+    Container(mobile_app, "Мобильное приложение", "React Native", "Предоставляет функциональность ТехноМарт через мобильное устройство", $sprite="android")
+    Container(admin_panel, "Админ-панель", "React, TypeScript", "Административный интерфейс для управления системой", $sprite="react")
+    
+    Container(api_gateway, "API Gateway", "Kong/Zuul", "Маршрутизация запросов, аутентификация, ограничение скорости")
+    
+    Container(user_service, "User Service", "Node.js, Express", "Управление пользователями, аутентификация, авторизация", $sprite="nodejs")
+    Container(product_service, "Product Service", "Node.js, Express", "Управление каталогом товаров, поиск", $sprite="nodejs")
+    Container(order_service, "Order Service", "Node.js, Express", "Обработка заказов, корзина покупок", $sprite="nodejs")
+    Container(review_service, "Review Service", "Node.js, Express", "Управление отзывами и рейтингами", $sprite="nodejs")
+    Container(notification_service, "Notification Service", "Node.js, Express", "Отправка уведомлений", $sprite="nodejs")
+    
+    ContainerDb(main_db, "Основная БД", "PostgreSQL", "Хранение пользователей, товаров, заказов, отзывов", $sprite="postgresql")
+    ContainerDb(cache, "Кэш", "Redis", "Кэширование сессий, данных, очереди задач", $sprite="redis")
+    ContainerDb(search_db, "Поисковая БД", "Elasticsearch", "Индексация и поиск товаров")
+    Container(file_storage, "Файловое хранилище", "MinIO/S3", "Хранение изображений товаров и отзывов")
+}
+
+System_Ext(payment_gateway, "Платежный шлюз", "Stripe, PayPal")
+System_Ext(delivery_service, "Служба доставки", "DHL, Почта")
+System_Ext(email_service, "Email сервис", "SendGrid, AWS SES")
+
+Rel(customer, web_app, "Использует", "HTTPS")
+Rel(customer, mobile_app, "Использует", "HTTPS")
+Rel(admin, admin_panel, "Управляет", "HTTPS")
+
+Rel(web_app, api_gateway, "Делает API вызовы", "HTTPS/JSON")
+Rel(mobile_app, api_gateway, "Делает API вызовы", "HTTPS/JSON")
+Rel(admin_panel, api_gateway, "Делает API вызовы", "HTTPS/JSON")
+
+Rel(api_gateway, user_service, "Маршрутизирует запросы", "HTTP/JSON")
+Rel(api_gateway, product_service, "Маршрутизирует запросы", "HTTP/JSON")
+Rel(api_gateway, order_service, "Маршрутизирует запросы", "HTTP/JSON")
+Rel(api_gateway, review_service, "Маршрутизирует запросы", "HTTP/JSON")
+
+Rel(user_service, main_db, "Читает/записывает данные пользователей", "TCP/SQL")
+Rel(product_service, main_db, "Читает/записывает данные товаров", "TCP/SQL")
+Rel(order_service, main_db, "Читает/записывает данные заказов", "TCP/SQL")
+Rel(review_service, main_db, "Читает/записывает отзывы", "TCP/SQL")
+
+Rel(user_service, cache, "Кэширует сессии", "TCP/Redis")
+Rel(product_service, cache, "Кэширует данные товаров", "TCP/Redis")
+Rel(order_service, cache, "Кэширует корзины", "TCP/Redis")
+
+Rel(product_service, search_db, "Индексирует товары", "HTTP/JSON")
+Rel(product_service, file_storage, "Сохраняет изображения", "HTTP/S3")
+Rel(review_service, file_storage, "Сохраняет изображения отзывов", "HTTP/S3")
+
+Rel(order_service, payment_gateway, "Обрабатывает платежи", "HTTPS/API")
+Rel(order_service, delivery_service, "Создает заявки на доставку", "HTTPS/API")
+Rel(notification_service, email_service, "Отправляет email", "HTTPS/API")
+
+Rel(order_service, notification_service, "Запрашивает отправку уведомлений", "HTTP/JSON")
+Rel(user_service, notification_service, "Запрашивает отправку уведомлений", "HTTP/JSON")
+
+SHOW_LEGEND()
+
+@enduml

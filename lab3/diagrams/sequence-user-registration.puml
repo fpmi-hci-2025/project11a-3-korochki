@@ -1,0 +1,67 @@
+@startuml SequenceDiagram_UserRegistration
+!theme plain
+title Диаграмма последовательности - Регистрация пользователя
+
+actor User as U
+participant "Registration Form" as RF
+participant "UserController" as UC
+participant "UserService" as US
+participant "UserRepository" as UR
+participant "PasswordEncoder" as PE
+participant "EmailService" as ES
+database "Database" as DB
+
+U -> RF: Заполнить форму регистрации
+activate RF
+
+RF -> RF: Валидация на клиенте
+RF -> UC: POST /api/users/register
+activate UC
+
+UC -> UC: Валидация данных
+UC -> US: registerUser(userData)
+activate US
+
+US -> US: Проверить уникальность email
+US -> UR: findByEmail(email)
+activate UR
+UR -> DB: SELECT * FROM users WHERE email = ?
+DB --> UR: result
+UR --> US: user or null
+deactivate UR
+
+alt email уже существует
+    US --> UC: throw EmailAlreadyExistsException
+    UC --> RF: HTTP 409 Conflict
+    RF --> U: Показать ошибку
+else email уникальный
+    US -> PE: encode(password)
+    activate PE
+    PE --> US: hashedPassword
+    deactivate PE
+    
+    US -> US: Создать объект User
+    US -> UR: save(user)
+    activate UR
+    UR -> DB: INSERT INTO users (...)
+    DB --> UR: user_id
+    UR --> US: savedUser
+    deactivate UR
+    
+    US -> ES: sendWelcomeEmail(user)
+    activate ES
+    ES -> ES: Создать email шаблон
+    ES --> US: email sent
+    deactivate ES
+    
+    US --> UC: registeredUser
+    deactivate US
+    
+    UC --> RF: HTTP 201 Created
+    deactivate UC
+    
+    RF --> U: Показать успешную регистрацию
+    deactivate RF
+end
+
+@enduml

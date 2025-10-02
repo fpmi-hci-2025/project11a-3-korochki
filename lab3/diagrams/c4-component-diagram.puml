@@ -1,0 +1,68 @@
+@startuml C4_Component
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
+
+title Диаграмма компонентов - Product Service
+
+Container(web_app, "Веб-приложение", "React")
+Container(mobile_app, "Мобильное приложение", "React Native")
+Container(admin_panel, "Админ-панель", "React")
+
+System_Boundary(product_service, "Product Service") {
+    Component(product_controller, "Product Controller", "Express.js", "Обрабатывает HTTP запросы для товаров")
+    Component(category_controller, "Category Controller", "Express.js", "Обрабатывает HTTP запросы для категорий")
+    Component(search_controller, "Search Controller", "Express.js", "Обрабатывает поисковые запросы")
+    
+    Component(product_service_impl, "Product Service", "Node.js", "Бизнес-логика управления товарами")
+    Component(category_service_impl, "Category Service", "Node.js", "Бизнес-логика управления категориями")
+    Component(search_service_impl, "Search Service", "Node.js", "Бизнес-логика поиска товаров")
+    Component(image_service_impl, "Image Service", "Node.js", "Обработка изображений товаров")
+    
+    Component(product_repository, "Product Repository", "Node.js", "Доступ к данным товаров")
+    Component(category_repository, "Category Repository", "Node.js", "Доступ к данным категорий")
+    Component(image_repository, "Image Repository", "Node.js", "Доступ к изображениям")
+    
+    Component(validation_middleware, "Validation Middleware", "Express.js", "Валидация входящих данных")
+    Component(auth_middleware, "Auth Middleware", "JWT", "Проверка аутентификации и авторизации")
+    Component(cache_middleware, "Cache Middleware", "Redis", "Кэширование ответов")
+}
+
+ContainerDb(main_db, "PostgreSQL", "Основная база данных")
+ContainerDb(search_db, "Elasticsearch", "Поисковая база данных")
+ContainerDb(cache, "Redis", "Кэш")
+Container(file_storage, "File Storage", "MinIO/S3")
+
+Rel(web_app, product_controller, "Получает товары", "HTTPS/JSON")
+Rel(mobile_app, product_controller, "Получает товары", "HTTPS/JSON")
+Rel(admin_panel, product_controller, "Управляет товарами", "HTTPS/JSON")
+Rel(admin_panel, category_controller, "Управляет категориями", "HTTPS/JSON")
+Rel(web_app, search_controller, "Ищет товары", "HTTPS/JSON")
+Rel(mobile_app, search_controller, "Ищет товары", "HTTPS/JSON")
+
+Rel(product_controller, auth_middleware, "Проверяет авторизацию")
+Rel(category_controller, auth_middleware, "Проверяет авторизацию")
+Rel(product_controller, validation_middleware, "Валидирует данные")
+Rel(category_controller, validation_middleware, "Валидирует данные")
+
+Rel(product_controller, cache_middleware, "Проверяет кэш")
+Rel(search_controller, cache_middleware, "Проверяет кэш")
+
+Rel(product_controller, product_service_impl, "Использует")
+Rel(category_controller, category_service_impl, "Использует")
+Rel(search_controller, search_service_impl, "Использует")
+
+Rel(product_service_impl, image_service_impl, "Обрабатывает изображения")
+Rel(product_service_impl, search_service_impl, "Индексирует товары")
+
+Rel(product_service_impl, product_repository, "Использует")
+Rel(category_service_impl, category_repository, "Использует")
+Rel(image_service_impl, image_repository, "Использует")
+
+Rel(product_repository, main_db, "Читает/записывает", "TCP/SQL")
+Rel(category_repository, main_db, "Читает/записывает", "TCP/SQL")
+Rel(search_service_impl, search_db, "Индексирует/ищет", "HTTP/JSON")
+Rel(cache_middleware, cache, "Кэширует", "TCP/Redis")
+Rel(image_repository, file_storage, "Сохраняет/получает", "HTTP/S3")
+
+SHOW_LEGEND()
+
+@enduml

@@ -1,0 +1,81 @@
+@startuml EventModeling_ProductManagement
+!theme plain
+title Event Modeling - Управление товарами
+
+' Определение цветов
+!define TRIGGER_COLOR White
+!define COMMAND_COLOR LightBlue
+!define EVENT_COLOR Yellow
+!define VIEW_COLOR LightGreen
+
+' Добавление товара администратором
+rectangle "Форма добавления\nтовара" as AddProductFormTrigger TRIGGER_COLOR
+rectangle "Добавить товар" as AddProductCmd COMMAND_COLOR
+rectangle "Товар добавлен" as ProductAddedEvt EVENT_COLOR
+
+' Обновление товара
+rectangle "Форма редактирования\nтовара" as EditProductFormTrigger TRIGGER_COLOR
+rectangle "Обновить товар" as UpdateProductCmd COMMAND_COLOR
+rectangle "Товар обновлен" as ProductUpdatedEvt EVENT_COLOR
+
+' Поиск товаров пользователем
+rectangle "Строка поиска" as SearchTrigger TRIGGER_COLOR
+rectangle "Найти товары" as SearchProductsCmd COMMAND_COLOR
+rectangle "Товары найдены" as ProductsFoundEvt EVENT_COLOR
+
+' Просмотр каталога
+rectangle "Каталог товаров" as ProductCatalogView VIEW_COLOR
+rectangle "Результаты поиска" as SearchResultsView VIEW_COLOR
+rectangle "Карточка товара" as ProductDetailsView VIEW_COLOR
+
+' Добавление в корзину
+rectangle "Кнопка 'Добавить\nв корзину'" as AddToCartTrigger TRIGGER_COLOR
+rectangle "Добавить в корзину" as AddToCartCmd COMMAND_COLOR
+rectangle "Товар добавлен\nв корзину" as ProductAddedToCartEvt EVENT_COLOR
+
+' Представление корзины
+rectangle "Корзина пользователя" as CartView VIEW_COLOR
+
+' Автоматическое обновление индекса поиска
+rectangle "Индекс поиска" as SearchIndexView VIEW_COLOR
+rectangle "Обновить индекс" as UpdateSearchIndexCmd COMMAND_COLOR
+rectangle "Индекс обновлен" as SearchIndexUpdatedEvt EVENT_COLOR
+
+' Потоки данных
+AddProductFormTrigger --> AddProductCmd
+AddProductCmd --> ProductAddedEvt
+
+EditProductFormTrigger --> UpdateProductCmd
+UpdateProductCmd --> ProductUpdatedEvt
+
+SearchTrigger --> SearchProductsCmd
+SearchProductsCmd --> ProductsFoundEvt
+
+' Представления обновляются событиями
+ProductAddedEvt --> ProductCatalogView
+ProductUpdatedEvt --> ProductCatalogView
+ProductsFoundEvt --> SearchResultsView
+
+' Автоматическое обновление поискового индекса
+ProductAddedEvt --> SearchIndexView
+ProductUpdatedEvt --> SearchIndexView
+SearchIndexView --> UpdateSearchIndexCmd
+UpdateSearchIndexCmd --> SearchIndexUpdatedEvt
+
+' Добавление в корзину
+AddToCartTrigger --> AddToCartCmd
+AddToCartCmd --> ProductAddedToCartEvt
+ProductAddedToCartEvt --> CartView
+
+' Переходы между представлениями
+ProductCatalogView --> ProductDetailsView
+SearchResultsView --> ProductDetailsView
+ProductDetailsView --> AddToCartTrigger
+
+' Аннотации
+note top of AddProductFormTrigger : Администратор заполняет\nданные нового товара
+note top of SearchTrigger : Пользователь вводит\nпоисковый запрос
+note top of SearchIndexView : Автоматическое обновление\nпоискового индекса
+note top of CartView : Отображение товаров\nв корзине пользователя
+
+@enduml

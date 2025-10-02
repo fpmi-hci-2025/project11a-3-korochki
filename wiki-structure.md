@@ -7,11 +7,104 @@
 
 ### Навигация по разделам
 - [Функциональные требования](#функциональные-требования)
-- [Диаграмма файлов приложения](#диаграмма-файлов-приложения)
+- [Диаграммы UML](#диаграммы-uml)
+- [Event Storming](#event-storming)
+- [Event Modeling](#event-modeling)
+- [Архитектура C4 Model](#архитектура-c4-model)
 - [Дополнительная спецификация](#дополнительная-спецификация)
 - [Схема базы данных](#схема-базы-данных)
 - [API проекта](#api-проекта)
 - [Презентация проекта](#презентация-проекта)
+
+---
+
+## Диаграммы UML
+
+### Use Case диаграммы и сценарии
+- **Файл**: [use-case-diagram.puml](lab3/diagrams/use-case-diagram.puml)
+- **Сценарии**: [use-case-scenarios.md](lab3/use-case-scenarios.md)
+
+Диаграмма вариантов использования показывает взаимодействие различных актеров (гость, покупатель, администратор, менеджер, курьер) с системой ТехноМарт.
+
+### Диаграммы деятельности
+- **Процесс оформления заказа**: [activity-order-processing.puml](lab3/diagrams/activity-order-processing.puml)
+- **Поиск и выбор товара**: [activity-product-search.puml](lab3/diagrams/activity-product-search.puml)
+
+### Диаграммы классов
+- **Основные сущности**: [class-diagram-core.puml](lab3/diagrams/class-diagram-core.puml)
+- **Заказы и корзина**: [class-diagram-order.puml](lab3/diagrams/class-diagram-order.puml)
+- **Отзывы и рейтинги**: [class-diagram-review.puml](lab3/diagrams/class-diagram-review.puml)
+- **Сервисные классы**: [class-diagram-services.puml](lab3/diagrams/class-diagram-services.puml)
+
+### Диаграммы последовательности
+- **Регистрация пользователя**: [sequence-user-registration.puml](lab3/diagrams/sequence-user-registration.puml)
+- **Поиск товаров**: [sequence-product-search.puml](lab3/diagrams/sequence-product-search.puml)
+- **Создание заказа**: [sequence-order-creation.puml](lab3/diagrams/sequence-order-creation.puml)
+- **Отправка отзыва**: [sequence-review-submission.puml](lab3/diagrams/sequence-review-submission.puml)
+- **Управление товарами**: [sequence-admin-product-management.puml](lab3/diagrams/sequence-admin-product-management.puml)
+
+### Диаграммы компонентов и пакетов
+- **Компоненты системы**: [component-diagram.puml](lab3/diagrams/component-diagram.puml)
+- **Структура пакетов**: [package-diagram.puml](lab3/diagrams/package-diagram.puml)
+
+### Диаграмма развертывания
+- **Инфраструктура**: [deployment-diagram.puml](lab3/diagrams/deployment-diagram.puml)
+
+### Схема базы данных (ERD)
+- **Файл**: [erd-database.puml](lab3/diagrams/erd-database.puml)
+
+---
+
+## Event Storming
+
+Event Storming - метод исследования предметной области через моделирование событий, команд и бизнес-процессов.
+
+### Крупномасштабное исследование (Big Picture)
+- **Файл**: [event-storming-big-picture.puml](lab3/diagrams/event-storming-big-picture.puml)
+
+Показывает общий поток событий в системе ТехноМарт от регистрации пользователя до доставки заказа.
+
+### Моделирование процессов
+- **Файл**: [event-storming-process-modeling.puml](lab3/diagrams/event-storming-process-modeling.puml)
+
+Детализирует бизнес-процессы через агрегаты, команды и события с выделением автоматизированных правил.
+
+---
+
+## Event Modeling
+
+Event Modeling - техника проектирования систем с использованием шаблонов Given/When/Then.
+
+### Поток оформления заказа
+- **Файл**: [event-modeling-order-flow.puml](lab3/diagrams/event-modeling-order-flow.puml)
+
+Моделирует процесс создания заказа от триггера до завершающих событий.
+
+### Управление товарами
+- **Файл**: [event-modeling-product-management.puml](lab3/diagrams/event-modeling-product-management.puml)
+
+Показывает потоки добавления товаров, поиска и обновления каталога.
+
+---
+
+## Архитектура C4 Model
+
+C4 Model - подход к документированию архитектуры через контекст, контейнеры, компоненты и код.
+
+### Контекстная диаграмма (Level 1)
+- **Файл**: [c4-context-diagram.puml](lab3/diagrams/c4-context-diagram.puml)
+
+Показывает систему ТехноМарт в контексте пользователей и внешних систем.
+
+### Диаграмма контейнеров (Level 2)
+- **Файл**: [c4-container-diagram.puml](lab3/diagrams/c4-container-diagram.puml)
+
+Детализирует архитектуру на уровне приложений, сервисов и баз данных.
+
+### Диаграмма компонентов (Level 3)
+- **Файл**: [c4-component-diagram.puml](lab3/diagrams/c4-component-diagram.puml)
+
+Показывает внутреннюю структуру Product Service на уровне компонентов.
 
 ---
 

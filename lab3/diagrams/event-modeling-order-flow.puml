@@ -1,0 +1,71 @@
+@startuml EventModeling_OrderFlow
+!theme plain
+title Event Modeling - Поток оформления заказа
+
+' Определение цветов
+!define TRIGGER_COLOR White
+!define COMMAND_COLOR LightBlue
+!define EVENT_COLOR Yellow
+!define VIEW_COLOR LightGreen
+
+' Шаблон команды: Trigger -> Command -> Event(s)
+rectangle "Корзина с товарами" as CartTrigger TRIGGER_COLOR
+rectangle "Создать заказ" as CreateOrderCmd COMMAND_COLOR
+rectangle "Заказ создан" as OrderCreatedEvt EVENT_COLOR
+
+rectangle "Товары зарезервированы" as ProductsReservedEvt EVENT_COLOR
+rectangle "Резерв не удался" as ReservationFailedEvt EVENT_COLOR
+
+' Шаблон представления: Event(s) -> View
+rectangle "Страница подтверждения\nзаказа" as OrderConfirmationView VIEW_COLOR
+
+' Автоматизированный шаблон: Event(s) -> View -> Auto Trigger -> Command -> Event(s)
+rectangle "Обработать платеж" as ProcessPaymentCmd COMMAND_COLOR
+rectangle "Платеж успешен" as PaymentSuccessEvt EVENT_COLOR
+rectangle "Платеж отклонен" as PaymentFailedEvt EVENT_COLOR
+
+rectangle "Подтвердить заказ" as ConfirmOrderCmd COMMAND_COLOR
+rectangle "Заказ подтвержден" as OrderConfirmedEvt EVENT_COLOR
+
+rectangle "Отменить заказ" as CancelOrderCmd COMMAND_COLOR
+rectangle "Заказ отменен" as OrderCancelledEvt EVENT_COLOR
+
+' Внешние системы
+rectangle "Платежный шлюз" as PaymentGatewayTrigger TRIGGER_COLOR
+rectangle "Уведомление клиента" as CustomerNotificationView VIEW_COLOR
+
+' Временная линия (слева направо)
+CartTrigger --> CreateOrderCmd
+CreateOrderCmd --> OrderCreatedEvt
+
+' Параллельные потоки после создания заказа
+OrderCreatedEvt --> ProductsReservedEvt
+OrderCreatedEvt --> ReservationFailedEvt
+
+' Успешное резервирование ведет к обработке платежа
+ProductsReservedEvt --> OrderConfirmationView
+OrderConfirmationView --> ProcessPaymentCmd
+ProcessPaymentCmd --> PaymentGatewayTrigger
+PaymentGatewayTrigger --> PaymentSuccessEvt
+PaymentGatewayTrigger --> PaymentFailedEvt
+
+' Успешный платеж ведет к подтверждению заказа
+PaymentSuccessEvt --> ConfirmOrderCmd
+ConfirmOrderCmd --> OrderConfirmedEvt
+
+' Неуспешный платеж или резервирование ведет к отмене
+PaymentFailedEvt --> CancelOrderCmd
+ReservationFailedEvt --> CancelOrderCmd
+CancelOrderCmd --> OrderCancelledEvt
+
+' Уведомления клиента
+OrderConfirmedEvt --> CustomerNotificationView
+OrderCancelledEvt --> CustomerNotificationView
+
+' Добавляем аннотации
+note top of CartTrigger : Пользователь нажимает\n"Оформить заказ"
+note top of OrderConfirmationView : Показать детали заказа\nи форму оплаты
+note top of PaymentGatewayTrigger : Внешняя система\nобработки платежей
+note top of CustomerNotificationView : Email/SMS уведомления\nо статусе заказа
+
+@enduml

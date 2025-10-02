@@ -1,0 +1,117 @@
+@startuml ClassDiagram_Services
+!theme plain
+title Диаграмма классов - Сервисные классы
+
+interface UserService {
+  + registerUser(userData: UserRegistrationData): User
+  + authenticateUser(email: String, password: String): User
+  + updateUserProfile(userId: UUID, profileData: UserProfileData): void
+  + deactivateUser(userId: UUID): void
+  + getUserById(userId: UUID): User
+  + getUserByEmail(email: String): User
+}
+
+class UserServiceImpl {
+  - userRepository: UserRepository
+  - passwordEncoder: PasswordEncoder
+  - emailService: EmailService
+  --
+  + registerUser(userData: UserRegistrationData): User
+  + authenticateUser(email: String, password: String): User
+  + updateUserProfile(userId: UUID, profileData: UserProfileData): void
+  + deactivateUser(userId: UUID): void
+  + getUserById(userId: UUID): User
+  + getUserByEmail(email: String): User
+  - validateUserData(userData: UserRegistrationData): void
+  - sendWelcomeEmail(user: User): void
+}
+
+interface ProductService {
+  + getProductById(productId: UUID): Product
+  + searchProducts(searchCriteria: ProductSearchCriteria): List<Product>
+  + getProductsByCategory(categoryId: UUID): List<Product>
+  + createProduct(productData: ProductData): Product
+  + updateProduct(productId: UUID, productData: ProductData): void
+  + deleteProduct(productId: UUID): void
+  + updateStock(productId: UUID, quantity: Integer): void
+}
+
+class ProductServiceImpl {
+  - productRepository: ProductRepository
+  - categoryRepository: CategoryRepository
+  - searchEngine: SearchEngine
+  --
+  + getProductById(productId: UUID): Product
+  + searchProducts(searchCriteria: ProductSearchCriteria): List<Product>
+  + getProductsByCategory(categoryId: UUID): List<Product>
+  + createProduct(productData: ProductData): Product
+  + updateProduct(productId: UUID, productData: ProductData): void
+  + deleteProduct(productId: UUID): void
+  + updateStock(productId: UUID, quantity: Integer): void
+  - validateProductData(productData: ProductData): void
+  - indexProductForSearch(product: Product): void
+}
+
+interface OrderService {
+  + createOrder(orderData: OrderData): Order
+  + getOrderById(orderId: UUID): Order
+  + getUserOrders(userId: UUID): List<Order>
+  + updateOrderStatus(orderId: UUID, status: OrderStatus): void
+  + cancelOrder(orderId: UUID): void
+  + processPayment(orderId: UUID, paymentData: PaymentData): Payment
+}
+
+class OrderServiceImpl {
+  - orderRepository: OrderRepository
+  - cartService: CartService
+  - paymentService: PaymentService
+  - deliveryService: DeliveryService
+  - emailService: EmailService
+  --
+  + createOrder(orderData: OrderData): Order
+  + getOrderById(orderId: UUID): Order
+  + getUserOrders(userId: UUID): List<Order>
+  + updateOrderStatus(orderId: UUID, status: OrderStatus): void
+  + cancelOrder(orderId: UUID): void
+  + processPayment(orderId: UUID, paymentData: PaymentData): Payment
+  - validateOrderData(orderData: OrderData): void
+  - reserveProducts(orderItems: List<OrderItem>): void
+  - sendOrderConfirmation(order: Order): void
+}
+
+interface CartService {
+  + getCart(userId: UUID): Cart
+  + addToCart(userId: UUID, productId: UUID, quantity: Integer): void
+  + removeFromCart(userId: UUID, productId: UUID): void
+  + updateCartItemQuantity(userId: UUID, productId: UUID, quantity: Integer): void
+  + clearCart(userId: UUID): void
+  + mergeCarts(guestCartId: UUID, userId: UUID): void
+}
+
+class CartServiceImpl {
+  - cartRepository: CartRepository
+  - productService: ProductService
+  --
+  + getCart(userId: UUID): Cart
+  + addToCart(userId: UUID, productId: UUID, quantity: Integer): void
+  + removeFromCart(userId: UUID, productId: UUID): void
+  + updateCartItemQuantity(userId: UUID, productId: UUID, quantity: Integer): void
+  + clearCart(userId: UUID): void
+  + mergeCarts(guestCartId: UUID, userId: UUID): void
+  - validateCartItem(productId: UUID, quantity: Integer): void
+}
+
+' Реализация интерфейсов
+UserServiceImpl ..|> UserService
+ProductServiceImpl ..|> ProductService
+OrderServiceImpl ..|> OrderService
+CartServiceImpl ..|> CartService
+
+' Зависимости между сервисами
+OrderServiceImpl --> CartService
+OrderServiceImpl --> PaymentService
+OrderServiceImpl --> DeliveryService
+UserServiceImpl --> EmailService
+ProductServiceImpl --> SearchEngine
+
+@enduml

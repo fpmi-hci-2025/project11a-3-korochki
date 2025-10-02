@@ -1,0 +1,74 @@
+@startuml ClassDiagram_Review
+!theme plain
+title Диаграмма классов - Отзывы и рейтинги
+
+class Review {
+  - id: UUID
+  - productId: UUID
+  - userId: UUID
+  - rating: Integer
+  - title: String
+  - content: String
+  - pros: String
+  - cons: String
+  - isRecommended: Boolean
+  - status: ReviewStatus
+  - createdDate: DateTime
+  - updatedDate: DateTime
+  - moderatedDate: DateTime
+  - moderatorId: UUID
+  --
+  + approve(): void
+  + reject(reason: String): void
+  + edit(newContent: String): void
+  + addImage(imageUrl: String): void
+  + calculateHelpfulness(): Double
+}
+
+enum ReviewStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  EDITED
+}
+
+class ReviewImage {
+  - id: UUID
+  - reviewId: UUID
+  - imageUrl: String
+  - caption: String
+  - sortOrder: Integer
+  --
+  + getImagePath(): String
+}
+
+class ReviewHelpfulness {
+  - id: UUID
+  - reviewId: UUID
+  - userId: UUID
+  - isHelpful: Boolean
+  - createdDate: DateTime
+  --
+  + toggle(): void
+}
+
+class ProductRating {
+  - productId: UUID
+  - averageRating: Double
+  - totalReviews: Integer
+  - ratingDistribution: Map<Integer, Integer>
+  - lastUpdated: DateTime
+  --
+  + updateRating(newReview: Review): void
+  + removeRating(removedReview: Review): void
+  + calculateAverage(): Double
+}
+
+' Связи между классами
+Review ||--o{ ReviewImage : "has images"
+Review ||--o{ ReviewHelpfulness : "has helpfulness votes"
+Product ||--o| ProductRating : "has rating"
+Review }o--|| Product : "reviews"
+Review }o--|| User : "written by"
+
+@enduml

@@ -1,0 +1,81 @@
+@startuml SequenceDiagram_ProductSearch
+!theme plain
+title Диаграмма последовательности - Поиск товаров
+
+actor User as U
+participant "Search Interface" as SI
+participant "ProductController" as PC
+participant "ProductService" as PS
+participant "SearchEngine" as SE
+participant "ProductRepository" as PR
+database "Database" as DB
+database "Search Index" as IDX
+
+U -> SI: Ввести поисковый запрос
+activate SI
+
+SI -> SI: Валидация запроса
+SI -> PC: GET /api/products/search?q=query&filters=...
+activate PC
+
+PC -> PC: Парсинг параметров поиска
+PC -> PS: searchProducts(searchCriteria)
+activate PS
+
+PS -> SE: search(query, filters)
+activate SE
+
+SE -> IDX: Поиск в индексе
+IDX --> SE: product_ids[]
+SE --> PS: searchResults
+
+alt Результаты найдены
+    PS -> PR: findByIds(productIds)
+    activate PR
+    PR -> DB: SELECT * FROM products WHERE id IN (...)
+    DB --> PR: products[]
+    PR --> PS: products
+    deactivate PR
+    
+    PS -> PS: Применить дополнительные фильтры
+    PS -> PS: Сортировка результатов
+    PS --> PC: searchResults
+    deactivate PS
+    
+    PC -> PC: Форматирование ответа
+    PC --> SI: HTTP 200 OK + products
+    deactivate PC
+    
+    SI -> SI: Отображение результатов
+    SI --> U: Показать найденные товары
+    
+    loop Для каждого товара
+        U -> SI: Клик на товар
+        SI -> PC: GET /api/products/{id}
+        activate PC
+        PC -> PS: getProductById(id)
+        activate PS
+        PS -> PR: findById(id)
+        activate PR
+        PR -> DB: SELECT * FROM products WHERE id = ?
+        DB --> PR: product
+        PR --> PS: product
+        deactivate PR
+        PS --> PC: product
+        deactivate PS
+        PC --> SI: HTTP 200 OK + product details
+        deactivate PC
+        SI --> U: Показать карточку товара
+    end
+
+else Результаты не найдены
+    deactivate SE
+    PS --> PC: empty results
+    deactivate PS
+    PC --> SI: HTTP 200 OK + empty
+    deactivate PC
+    SI --> U: Показать "Ничего не найдено"
+    deactivate SI
+end
+
+@enduml

@@ -1,0 +1,144 @@
+@startuml EventStorming_BigPicture
+!theme plain
+title Event Storming - Крупномасштабное исследование (Big Picture)
+
+!define DOMAIN_EVENT_COLOR Orange
+!define COMMAND_COLOR LightBlue
+!define ACTOR_COLOR Yellow
+!define POLICY_COLOR Purple
+!define EXTERNAL_SYSTEM_COLOR Pink
+!define HOTSPOT_COLOR Red
+
+' События предметной области (Domain Events) - Оранжевый
+rectangle "Пользователь зарегистрирован" as UserRegistered DOMAIN_EVENT_COLOR
+rectangle "Пользователь авторизован" as UserLoggedIn DOMAIN_EVENT_COLOR
+rectangle "Товар добавлен в каталог" as ProductAdded DOMAIN_EVENT_COLOR
+rectangle "Товар обновлен" as ProductUpdated DOMAIN_EVENT_COLOR
+rectangle "Товар найден" as ProductSearched DOMAIN_EVENT_COLOR
+rectangle "Товар добавлен в корзину" as ProductAddedToCart DOMAIN_EVENT_COLOR
+rectangle "Товар удален из корзины" as ProductRemovedFromCart DOMAIN_EVENT_COLOR
+rectangle "Заказ создан" as OrderCreated DOMAIN_EVENT_COLOR
+rectangle "Заказ подтвержден" as OrderConfirmed DOMAIN_EVENT_COLOR
+rectangle "Платеж обработан" as PaymentProcessed DOMAIN_EVENT_COLOR
+rectangle "Платеж отклонен" as PaymentRejected DOMAIN_EVENT_COLOR
+rectangle "Товары зарезервированы" as ProductsReserved DOMAIN_EVENT_COLOR
+rectangle "Заказ отправлен" as OrderShipped DOMAIN_EVENT_COLOR
+rectangle "Заказ доставлен" as OrderDelivered DOMAIN_EVENT_COLOR
+rectangle "Заказ отменен" as OrderCancelled DOMAIN_EVENT_COLOR
+rectangle "Отзыв написан" as ReviewSubmitted DOMAIN_EVENT_COLOR
+rectangle "Отзыв одобрен" as ReviewApproved DOMAIN_EVENT_COLOR
+rectangle "Отзыв отклонен" as ReviewRejected DOMAIN_EVENT_COLOR
+rectangle "Рейтинг товара обновлен" as ProductRatingUpdated DOMAIN_EVENT_COLOR
+rectangle "Уведомление отправлено" as NotificationSent DOMAIN_EVENT_COLOR
+
+' Команды (Commands) - Голубой
+rectangle "Зарегистрировать пользователя" as RegisterUser COMMAND_COLOR
+rectangle "Авторизовать пользователя" as LoginUser COMMAND_COLOR
+rectangle "Добавить товар" as AddProduct COMMAND_COLOR
+rectangle "Обновить товар" as UpdateProduct COMMAND_COLOR
+rectangle "Найти товары" as SearchProducts COMMAND_COLOR
+rectangle "Добавить в корзину" as AddToCart COMMAND_COLOR
+rectangle "Удалить из корзины" as RemoveFromCart COMMAND_COLOR
+rectangle "Создать заказ" as CreateOrder COMMAND_COLOR
+rectangle "Подтвердить заказ" as ConfirmOrder COMMAND_COLOR
+rectangle "Обработать платеж" as ProcessPayment COMMAND_COLOR
+rectangle "Зарезервировать товары" as ReserveProducts COMMAND_COLOR
+rectangle "Отправить заказ" as ShipOrder COMMAND_COLOR
+rectangle "Доставить заказ" as DeliverOrder COMMAND_COLOR
+rectangle "Отменить заказ" as CancelOrder COMMAND_COLOR
+rectangle "Написать отзыв" as WriteReview COMMAND_COLOR
+rectangle "Модерировать отзыв" as ModerateReview COMMAND_COLOR
+rectangle "Обновить рейтинг" as UpdateRating COMMAND_COLOR
+rectangle "Отправить уведомление" as SendNotification COMMAND_COLOR
+
+' Актеры (Actors) - Желтый
+rectangle "Покупатель" as Customer ACTOR_COLOR
+rectangle "Гость" as Guest ACTOR_COLOR
+rectangle "Администратор" as Admin ACTOR_COLOR
+rectangle "Менеджер" as Manager ACTOR_COLOR
+rectangle "Курьер" as Courier ACTOR_COLOR
+
+' Политики/Правила (Policies) - Фиолетовый
+rectangle "При создании заказа\nзарезервировать товары" as ReservePolicy POLICY_COLOR
+rectangle "При успешном платеже\nподтвердить заказ" as ConfirmPolicy POLICY_COLOR
+rectangle "При подтверждении заказа\nотправить уведомление" as NotifyPolicy POLICY_COLOR
+rectangle "При одобрении отзыва\nобновить рейтинг" as RatingPolicy POLICY_COLOR
+rectangle "При отмене заказа\nосвободить резерв" as ReleasePolicy POLICY_COLOR
+
+' Внешние системы (External Systems) - Розовый
+rectangle "Платежный шлюз" as PaymentGateway EXTERNAL_SYSTEM_COLOR
+rectangle "Служба доставки" as DeliveryService EXTERNAL_SYSTEM_COLOR
+rectangle "Email сервис" as EmailService EXTERNAL_SYSTEM_COLOR
+rectangle "SMS сервис" as SMSService EXTERNAL_SYSTEM_COLOR
+
+' Проблемные точки (Hotspots) - Красный
+rectangle "Конкурентное\nрезервирование товаров" as ConcurrencyHotspot HOTSPOT_COLOR
+rectangle "Обработка отказов\nплатежных систем" as PaymentFailureHotspot HOTSPOT_COLOR
+rectangle "Синхронизация\nс внешними службами" as SyncHotspot HOTSPOT_COLOR
+
+' Временная линия и связи (слева направо)
+Guest --> RegisterUser
+RegisterUser --> UserRegistered
+Customer --> LoginUser
+LoginUser --> UserLoggedIn
+
+Admin --> AddProduct
+AddProduct --> ProductAdded
+Admin --> UpdateProduct
+UpdateProduct --> ProductUpdated
+
+Customer --> SearchProducts
+SearchProducts --> ProductSearched
+
+Customer --> AddToCart
+AddToCart --> ProductAddedToCart
+Customer --> RemoveFromCart
+RemoveFromCart --> ProductRemovedFromCart
+
+Customer --> CreateOrder
+CreateOrder --> OrderCreated
+OrderCreated --> ReservePolicy
+ReservePolicy --> ReserveProducts
+ReserveProducts --> ProductsReserved
+
+Manager --> ConfirmOrder
+ConfirmOrder --> OrderConfirmed
+OrderConfirmed --> ProcessPayment
+ProcessPayment --> PaymentGateway
+PaymentGateway --> PaymentProcessed
+PaymentGateway --> PaymentRejected
+
+PaymentProcessed --> ConfirmPolicy
+ConfirmPolicy --> NotifyPolicy
+NotifyPolicy --> SendNotification
+SendNotification --> EmailService
+SendNotification --> SMSService
+EmailService --> NotificationSent
+SMSService --> NotificationSent
+
+Manager --> ShipOrder
+ShipOrder --> OrderShipped
+OrderShipped --> DeliveryService
+Courier --> DeliverOrder
+DeliverOrder --> OrderDelivered
+
+Customer --> CancelOrder
+CancelOrder --> OrderCancelled
+OrderCancelled --> ReleasePolicy
+
+Customer --> WriteReview
+WriteReview --> ReviewSubmitted
+Manager --> ModerateReview
+ModerateReview --> ReviewApproved
+ModerateReview --> ReviewRejected
+
+ReviewApproved --> RatingPolicy
+RatingPolicy --> UpdateRating
+UpdateRating --> ProductRatingUpdated
+
+' Связи с проблемными точками
+ProductsReserved --> ConcurrencyHotspot
+PaymentRejected --> PaymentFailureHotspot
+DeliveryService --> SyncHotspot
+
+@enduml

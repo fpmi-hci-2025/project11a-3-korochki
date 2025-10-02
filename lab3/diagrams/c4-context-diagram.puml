@@ -1,0 +1,40 @@
+@startuml C4_Context
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Context.puml
+
+!define DEVICONS https://raw.githubusercontent.com/tupadr3/plantuml-icon-font-sprites/master/devicons
+!define FONTAWESOME https://raw.githubusercontent.com/tupadr3/plantuml-icon-font-sprites/master/font-awesome-5
+
+!include DEVICONS/react.puml
+!include DEVICONS/android.puml
+!include FONTAWESOME/users.puml
+!include FONTAWESOME/user_tie.puml
+
+title Контекстная диаграмма системы ТехноМарт
+
+Person(customer, "Покупатель", "Пользователь, который покупает цифровую технику", $sprite="users")
+Person(guest, "Гость", "Незарегистрированный посетитель сайта", $sprite="users")
+Person(admin, "Администратор", "Управляет системой и каталогом товаров", $sprite="user_tie")
+Person(manager, "Менеджер", "Обрабатывает заказы и консультирует клиентов", $sprite="user_tie")
+
+System(technomart, "ТехноМарт", "Онлайн-магазин цифровой техники с веб и мобильным интерфейсами")
+
+System_Ext(payment_gateway, "Платежный шлюз", "Обработка онлайн-платежей (Stripe, PayPal)")
+System_Ext(delivery_service, "Служба доставки", "Доставка товаров клиентам")
+System_Ext(email_service, "Email сервис", "Отправка уведомлений и подтверждений")
+System_Ext(sms_service, "SMS сервис", "Отправка SMS уведомлений")
+System_Ext(analytics, "Аналитика", "Сбор и анализ данных о пользователях")
+
+Rel(customer, technomart, "Просматривает товары, оформляет заказы", "HTTPS")
+Rel(guest, technomart, "Просматривает каталог, регистрируется", "HTTPS")
+Rel(admin, technomart, "Управляет товарами и системой", "HTTPS")
+Rel(manager, technomart, "Обрабатывает заказы, модерирует отзывы", "HTTPS")
+
+Rel(technomart, payment_gateway, "Обрабатывает платежи", "HTTPS/API")
+Rel(technomart, delivery_service, "Создает заявки на доставку", "HTTPS/API")
+Rel(technomart, email_service, "Отправляет уведомления", "SMTP/API")
+Rel(technomart, sms_service, "Отправляет SMS", "HTTPS/API")
+Rel(technomart, analytics, "Передает данные для анализа", "HTTPS/API")
+
+SHOW_LEGEND()
+
+@enduml
