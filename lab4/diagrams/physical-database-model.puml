@@ -1,0 +1,376 @@
+@startuml Physical_Database_Model_PostgreSQL
+!theme plain
+title Физическая модель базы данных (PostgreSQL) - ТехноМарт
+
+' Определение таблиц с типами данных PostgreSQL
+
+entity "users" as users {
+  * id : UUID <<PK>>
+  --
+  * email : VARCHAR(255) <<UK>>
+  * password_hash : VARCHAR(255)
+  * first_name : VARCHAR(100)
+  * last_name : VARCHAR(100)
+  phone : VARCHAR(20)
+  date_of_birth : DATE
+  gender : VARCHAR(10)
+  role : VARCHAR(20)
+  is_active : BOOLEAN
+  * created_at : TIMESTAMP WITH TIME ZONE
+  updated_at : TIMESTAMP WITH TIME ZONE
+  last_login_at : TIMESTAMP WITH TIME ZONE
+  --
+  CHECK (role IN ('customer', 'manager', 'admin', 'courier'))
+  CHECK (gender IN ('male', 'female', 'other'))
+  INDEX idx_users_email (email)
+  INDEX idx_users_role (role)
+}
+
+entity "addresses" as addresses {
+  * id : UUID <<PK>>
+  --
+  * user_id : UUID <<FK>>
+  * country : VARCHAR(100)
+  * city : VARCHAR(100)
+  * street : VARCHAR(200)
+  * building : VARCHAR(20)
+  apartment : VARCHAR(20)
+  postal_code : VARCHAR(20)
+  is_default : BOOLEAN DEFAULT FALSE
+  * created_at : TIMESTAMP WITH TIME ZONE
+  --
+  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+  INDEX idx_addresses_user_id (user_id)
+}
+
+entity "categories" as categories {
+  * id : UUID <<PK>>
+  --
+  * name : VARCHAR(200)
+  description : TEXT
+  parent_id : UUID <<FK>>
+  * slug : VARCHAR(200) <<UK>>
+  sort_order : INTEGER DEFAULT 0
+  is_active : BOOLEAN DEFAULT TRUE
+  * created_at : TIMESTAMP WITH TIME ZONE
+  updated_at : TIMESTAMP WITH TIME ZONE
+  --
+  FOREIGN KEY (parent_id) REFERENCES categories(id) ON DELETE SET NULL
+  UNIQUE INDEX idx_categories_slug (slug)
+  INDEX idx_categories_parent_id (parent_id)
+  INDEX idx_categories_active (is_active)
+}
+
+entity "brands" as brands {
+  * id : UUID <<PK>>
+  --
+  * name : VARCHAR(200) <<UK>>
+  description : TEXT
+  logo_url : VARCHAR(500)
+  website : VARCHAR(500)
+  is_active : BOOLEAN DEFAULT TRUE
+  * created_at : TIMESTAMP WITH TIME ZONE
+  updated_at : TIMESTAMP WITH TIME ZONE
+  --
+  UNIQUE INDEX idx_brands_name (name)
+  INDEX idx_brands_active (is_active)
+}
+
+entity "products" as products {
+  * id : UUID <<PK>>
+  --
+  * name : VARCHAR(500)
+  description : TEXT
+  short_description : VARCHAR(1000)
+  * price : NUMERIC(10,2)
+  discount_price : NUMERIC(10,2)
+  * category_id : UUID <<FK>>
+  * brand_id : UUID <<FK>>
+  * sku : VARCHAR(100) <<UK>>
+  weight : NUMERIC(8,3)
+  dimensions : VARCHAR(100)
+  in_stock : INTEGER DEFAULT 0
+  reserved_stock : INTEGER DEFAULT 0
+  is_active : BOOLEAN DEFAULT TRUE
+  * created_at : TIMESTAMP WITH TIME ZONE
+  updated_at : TIMESTAMP WITH TIME ZONE
+  --
+  FOREIGN KEY (category_id) REFERENCES categories(id) ON DELETE RESTRICT
+  FOREIGN KEY (brand_id) REFERENCES brands(id) ON DELETE RESTRICT
+  CHECK (price >= 0)
+  CHECK (discount_price IS NULL OR discount_price < price)
+  CHECK (in_stock >= 0)
+  CHECK (reserved_stock >= 0 AND reserved_stock <= in_stock)
+  UNIQUE INDEX idx_products_sku (sku)
+  INDEX idx_products_category_id (category_id)
+  INDEX idx_products_brand_id (brand_id)
+  INDEX idx_products_price (price)
+  INDEX idx_products_active (is_active)
+  INDEX idx_products_name_trgm (name) USING GIN
+}
+
+entity "product_images" as product_images {
+  * id : UUID <<PK>>
+  --
+  * product_id : UUID <<FK>>
+  * image_url : VARCHAR(500)
+  alt_text : VARCHAR(200)
+  sort_order : INTEGER DEFAULT 0
+  is_main : BOOLEAN DEFAULT FALSE
+  * created_at : TIMESTAMP WITH TIME ZONE
+  --
+  FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE
+  INDEX idx_product_images_product_id (product_id)
+  INDEX idx_product_images_sort_order (product_id, sort_order)
+}
+
+entity "product_characteristics" as product_characteristics {
+  * id : UUID <<PK>>
+  --
+  * product_id : UUID <<FK>>
+  * name : VARCHAR(200)
+  * value : VARCHAR(500)
+  unit : VARCHAR(50)
+  sort_order : INTEGER DEFAULT 0
+  --
+  FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE
+  INDEX idx_product_characteristics_product_id (product_id)
+}
+
+entity "carts" as carts {
+  * id : UUID <<PK>>
+  --
+  user_id : UUID <<FK>>
+  session_id : VARCHAR(255)
+  * created_at : TIMESTAMP WITH TIME ZONE
+  updated_at : TIMESTAMP WITH TIME ZONE
+  --
+  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+  UNIQUE INDEX idx_carts_user_id (user_id)
+  INDEX idx_carts_session_id (session_id)
+}
+
+entity "cart_items" as cart_items {
+  * id : UUID <<PK>>
+  --
+  * cart_id : UUID <<FK>>
+  * product_id : UUID <<FK>>
+  * quantity : INTEGER
+  * added_at : TIMESTAMP WITH TIME ZONE
+  --
+  FOREIGN KEY (cart_id) REFERENCES carts(id) ON DELETE CASCADE
+  FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE
+  CHECK (quantity > 0)
+  UNIQUE INDEX idx_cart_items_cart_product (cart_id, product_id)
+  INDEX idx_cart_items_cart_id (cart_id)
+}
+
+entity "orders" as orders {
+  * id : UUID <<PK>>
+  --
+  * user_id : UUID <<FK>>
+  * order_number : VARCHAR(50) <<UK>>
+  * status : VARCHAR(20)
+  * total_amount : NUMERIC(10,2)
+  discount_amount : NUMERIC(10,2) DEFAULT 0
+  delivery_amount : NUMERIC(10,2) DEFAULT 0
+  payment_method : VARCHAR(20)
+  delivery_method : VARCHAR(20)
+  delivery_address : JSONB
+  notes : TEXT
+  * created_at : TIMESTAMP WITH TIME ZONE
+  updated_at : TIMESTAMP WITH TIME ZONE
+  delivery_date : TIMESTAMP WITH TIME ZONE
+  --
+  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE RESTRICT
+  CHECK (status IN ('created', 'confirmed', 'processing', 'shipped', 'delivered', 'cancelled'))
+  CHECK (payment_method IN ('card', 'cash', 'installment'))
+  CHECK (delivery_method IN ('courier', 'pickup', 'post'))
+  CHECK (total_amount >= 0)
+  UNIQUE INDEX idx_orders_order_number (order_number)
+  INDEX idx_orders_user_id (user_id)
+  INDEX idx_orders_status (status)
+  INDEX idx_orders_created_at (created_at)
+}
+
+entity "order_items" as order_items {
+  * id : UUID <<PK>>
+  --
+  * order_id : UUID <<FK>>
+  * product_id : UUID <<FK>>
+  * quantity : INTEGER
+  * unit_price : NUMERIC(10,2)
+  * total_price : NUMERIC(10,2)
+  --
+  FOREIGN KEY (order_id) REFERENCES orders(id) ON DELETE CASCADE
+  FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE RESTRICT
+  CHECK (quantity > 0)
+  CHECK (unit_price >= 0)
+  CHECK (total_price >= 0)
+  INDEX idx_order_items_order_id (order_id)
+  INDEX idx_order_items_product_id (product_id)
+}
+
+entity "payments" as payments {
+  * id : UUID <<PK>>
+  --
+  * order_id : UUID <<FK>>
+  * amount : NUMERIC(10,2)
+  * method : VARCHAR(20)
+  * status : VARCHAR(20)
+  transaction_id : VARCHAR(200)
+  processed_at : TIMESTAMP WITH TIME ZONE
+  notes : TEXT
+  * created_at : TIMESTAMP WITH TIME ZONE
+  --
+  FOREIGN KEY (order_id) REFERENCES orders(id) ON DELETE CASCADE
+  CHECK (status IN ('pending', 'processing', 'completed', 'failed', 'refunded'))
+  CHECK (amount >= 0)
+  INDEX idx_payments_order_id (order_id)
+  INDEX idx_payments_status (status)
+  INDEX idx_payments_transaction_id (transaction_id)
+}
+
+entity "deliveries" as deliveries {
+  * id : UUID <<PK>>
+  --
+  * order_id : UUID <<FK>>
+  * method : VARCHAR(20)
+  tracking_number : VARCHAR(200)
+  carrier_name : VARCHAR(200)
+  * status : VARCHAR(20)
+  estimated_date : TIMESTAMP WITH TIME ZONE
+  actual_date : TIMESTAMP WITH TIME ZONE
+  address : JSONB
+  * created_at : TIMESTAMP WITH TIME ZONE
+  updated_at : TIMESTAMP WITH TIME ZONE
+  --
+  FOREIGN KEY (order_id) REFERENCES orders(id) ON DELETE CASCADE
+  CHECK (status IN ('pending', 'picked', 'in_transit', 'out_for_delivery', 'delivered', 'failed'))
+  INDEX idx_deliveries_order_id (order_id)
+  INDEX idx_deliveries_tracking_number (tracking_number)
+  INDEX idx_deliveries_status (status)
+}
+
+entity "reviews" as reviews {
+  * id : UUID <<PK>>
+  --
+  * product_id : UUID <<FK>>
+  * user_id : UUID <<FK>>
+  * rating : INTEGER
+  title : VARCHAR(500)
+  content : TEXT
+  pros : TEXT
+  cons : TEXT
+  is_recommended : BOOLEAN
+  * status : VARCHAR(20)
+  * created_at : TIMESTAMP WITH TIME ZONE
+  updated_at : TIMESTAMP WITH TIME ZONE
+  moderated_at : TIMESTAMP WITH TIME ZONE
+  moderator_id : UUID <<FK>>
+  --
+  FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE
+  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+  FOREIGN KEY (moderator_id) REFERENCES users(id) ON DELETE SET NULL
+  CHECK (rating >= 1 AND rating <= 5)
+  CHECK (status IN ('pending', 'approved', 'rejected'))
+  INDEX idx_reviews_product_id (product_id)
+  INDEX idx_reviews_user_id (user_id)
+  INDEX idx_reviews_status (status)
+  INDEX idx_reviews_rating (rating)
+  INDEX idx_reviews_created_at (created_at)
+}
+
+entity "review_images" as review_images {
+  * id : UUID <<PK>>
+  --
+  * review_id : UUID <<FK>>
+  * image_url : VARCHAR(500)
+  caption : VARCHAR(200)
+  sort_order : INTEGER DEFAULT 0
+  * created_at : TIMESTAMP WITH TIME ZONE
+  --
+  FOREIGN KEY (review_id) REFERENCES reviews(id) ON DELETE CASCADE
+  INDEX idx_review_images_review_id (review_id)
+}
+
+entity "review_helpfulness" as review_helpfulness {
+  * id : UUID <<PK>>
+  --
+  * review_id : UUID <<FK>>
+  * user_id : UUID <<FK>>
+  * is_helpful : BOOLEAN
+  * created_at : TIMESTAMP WITH TIME ZONE
+  --
+  FOREIGN KEY (review_id) REFERENCES reviews(id) ON DELETE CASCADE
+  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+  UNIQUE INDEX idx_review_helpfulness_review_user (review_id, user_id)
+  INDEX idx_review_helpfulness_review_id (review_id)
+}
+
+entity "product_ratings" as product_ratings {
+  * product_id : UUID <<PK,FK>>
+  --
+  * average_rating : NUMERIC(3,2)
+  * total_reviews : INTEGER
+  rating_distribution : JSONB
+  * last_updated : TIMESTAMP WITH TIME ZONE
+  --
+  FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE
+  CHECK (average_rating >= 0 AND average_rating <= 5)
+  CHECK (total_reviews >= 0)
+}
+
+' Определение связей
+users ||--o{ addresses
+users ||--o| carts
+users ||--o{ orders
+users ||--o{ reviews
+users ||--o{ review_helpfulness
+
+categories ||--o{ categories
+categories ||--o{ products
+brands ||--o{ products
+
+products ||--o{ product_images
+products ||--o{ product_characteristics
+products ||--o{ cart_items
+products ||--o{ order_items
+products ||--o{ reviews
+products ||--|| product_ratings
+
+carts ||--o{ cart_items
+
+orders ||--o{ order_items
+orders ||--o| payments
+orders ||--o| deliveries
+
+reviews ||--o{ review_images
+reviews ||--o{ review_helpfulness
+
+note top of users
+  **Расширения PostgreSQL:**
+  - UUID: CREATE EXTENSION IF NOT EXISTS "uuid-ossp"
+  - Полнотекстовый поиск: CREATE EXTENSION IF NOT EXISTS "pg_trgm"
+  
+  **Партиционирование:**
+  - orders: по created_at (месячные партиции)
+  - reviews: по created_at (месячные партиции)
+end note
+
+note bottom of products
+  **Индексы для производительности:**
+  - GIN индекс для полнотекстового поиска
+  - B-tree индексы для фильтрации
+  - Composite индексы для сложных запросов
+end note
+
+note right of orders
+  **Оптимизация:**
+  - Партиционирование по дате создания
+  - Архивирование старых заказов (> 2 года)
+  - Материализованные представления для аналитики
+end note
+
+@enduml
+

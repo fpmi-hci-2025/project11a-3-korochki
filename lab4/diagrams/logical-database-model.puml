@@ -1,0 +1,290 @@
+@startuml Logical_Database_Model
+!theme plain
+title Логическая модель базы данных - ТехноМарт
+
+' Стиль для сущностей
+skinparam class {
+  BackgroundColor White
+  BorderColor Black
+  ArrowColor Black
+}
+
+' Определение сущностей с атрибутами
+
+class User {
+  + user_id : UUID <<PK>>
+  --
+  email : String(255) <<UK>>
+  password_hash : String(255)
+  first_name : String(100)
+  last_name : String(100)
+  phone : String(20)
+  date_of_birth : Date
+  gender : Enum
+  role : Enum
+  is_active : Boolean
+  created_at : Timestamp
+  updated_at : Timestamp
+  last_login_at : Timestamp
+}
+
+class Address {
+  + address_id : UUID <<PK>>
+  --
+  user_id : UUID <<FK>>
+  country : String(100)
+  city : String(100)
+  street : String(200)
+  building : String(20)
+  apartment : String(20)
+  postal_code : String(20)
+  is_default : Boolean
+  created_at : Timestamp
+}
+
+class Category {
+  + category_id : UUID <<PK>>
+  --
+  name : String(200)
+  description : Text
+  parent_id : UUID <<FK>>
+  slug : String(200) <<UK>>
+  sort_order : Integer
+  is_active : Boolean
+  created_at : Timestamp
+  updated_at : Timestamp
+}
+
+class Brand {
+  + brand_id : UUID <<PK>>
+  --
+  name : String(200) <<UK>>
+  description : Text
+  logo_url : String(500)
+  website : String(500)
+  is_active : Boolean
+  created_at : Timestamp
+  updated_at : Timestamp
+}
+
+class Product {
+  + product_id : UUID <<PK>>
+  --
+  name : String(500)
+  description : Text
+  short_description : String(1000)
+  price : Decimal(10,2)
+  discount_price : Decimal(10,2)
+  category_id : UUID <<FK>>
+  brand_id : UUID <<FK>>
+  sku : String(100) <<UK>>
+  weight : Decimal(8,3)
+  dimensions : String(100)
+  in_stock : Integer
+  reserved_stock : Integer
+  is_active : Boolean
+  created_at : Timestamp
+  updated_at : Timestamp
+}
+
+class ProductImage {
+  + image_id : UUID <<PK>>
+  --
+  product_id : UUID <<FK>>
+  image_url : String(500)
+  alt_text : String(200)
+  sort_order : Integer
+  is_main : Boolean
+  created_at : Timestamp
+}
+
+class ProductCharacteristic {
+  + characteristic_id : UUID <<PK>>
+  --
+  product_id : UUID <<FK>>
+  name : String(200)
+  value : String(500)
+  unit : String(50)
+  sort_order : Integer
+}
+
+class Cart {
+  + cart_id : UUID <<PK>>
+  --
+  user_id : UUID <<FK>>
+  session_id : String(255)
+  created_at : Timestamp
+  updated_at : Timestamp
+}
+
+class CartItem {
+  + cart_item_id : UUID <<PK>>
+  --
+  cart_id : UUID <<FK>>
+  product_id : UUID <<FK>>
+  quantity : Integer
+  added_at : Timestamp
+}
+
+class Order {
+  + order_id : UUID <<PK>>
+  --
+  user_id : UUID <<FK>>
+  order_number : String(50) <<UK>>
+  status : Enum
+  total_amount : Decimal(10,2)
+  discount_amount : Decimal(10,2)
+  delivery_amount : Decimal(10,2)
+  payment_method : Enum
+  delivery_method : Enum
+  delivery_address : JSON
+  notes : Text
+  created_at : Timestamp
+  updated_at : Timestamp
+  delivery_date : Timestamp
+}
+
+class OrderItem {
+  + order_item_id : UUID <<PK>>
+  --
+  order_id : UUID <<FK>>
+  product_id : UUID <<FK>>
+  quantity : Integer
+  unit_price : Decimal(10,2)
+  total_price : Decimal(10,2)
+}
+
+class Payment {
+  + payment_id : UUID <<PK>>
+  --
+  order_id : UUID <<FK>>
+  amount : Decimal(10,2)
+  method : Enum
+  status : Enum
+  transaction_id : String(200)
+  processed_at : Timestamp
+  notes : Text
+  created_at : Timestamp
+}
+
+class Delivery {
+  + delivery_id : UUID <<PK>>
+  --
+  order_id : UUID <<FK>>
+  method : Enum
+  tracking_number : String(200)
+  carrier_name : String(200)
+  status : Enum
+  estimated_date : Timestamp
+  actual_date : Timestamp
+  address : JSON
+  created_at : Timestamp
+  updated_at : Timestamp
+}
+
+class Review {
+  + review_id : UUID <<PK>>
+  --
+  product_id : UUID <<FK>>
+  user_id : UUID <<FK>>
+  rating : Integer
+  title : String(500)
+  content : Text
+  pros : Text
+  cons : Text
+  is_recommended : Boolean
+  status : Enum
+  created_at : Timestamp
+  updated_at : Timestamp
+  moderated_at : Timestamp
+  moderator_id : UUID <<FK>>
+}
+
+class ReviewImage {
+  + image_id : UUID <<PK>>
+  --
+  review_id : UUID <<FK>>
+  image_url : String(500)
+  caption : String(200)
+  sort_order : Integer
+  created_at : Timestamp
+}
+
+class ReviewHelpfulness {
+  + helpfulness_id : UUID <<PK>>
+  --
+  review_id : UUID <<FK>>
+  user_id : UUID <<FK>>
+  is_helpful : Boolean
+  created_at : Timestamp
+}
+
+class ProductRating {
+  + product_id : UUID <<PK,FK>>
+  --
+  average_rating : Decimal(3,2)
+  total_reviews : Integer
+  rating_distribution : JSON
+  last_updated : Timestamp
+}
+
+' Связи между сущностями
+
+User "1" -- "0..*" Address : has
+User "1" -- "0..1" Cart : owns
+User "1" -- "0..*" Order : places
+User "1" -- "0..*" Review : writes
+User "1" -- "0..*" ReviewHelpfulness : votes
+
+Category "1" -- "0..*" Category : has subcategories
+Category "1" -- "0..*" Product : contains
+Brand "1" -- "0..*" Product : manufactures
+
+Product "1" -- "0..*" ProductImage : has
+Product "1" -- "0..*" ProductCharacteristic : has
+Product "1" -- "0..*" CartItem : added to
+Product "1" -- "0..*" OrderItem : ordered as
+Product "1" -- "0..*" Review : reviewed as
+Product "1" -- "0..1" ProductRating : has rating
+
+Cart "1" -- "0..*" CartItem : contains
+
+Order "1" -- "1..*" OrderItem : contains
+Order "1" -- "0..1" Payment : paid by
+Order "1" -- "0..1" Delivery : delivered by
+
+Review "1" -- "0..*" ReviewImage : has
+Review "1" -- "0..*" ReviewHelpfulness : voted on
+
+note right of User
+  Роли: Customer, Manager, Admin, Courier
+  Статусы: Active, Blocked, Deleted
+end note
+
+note right of Order
+  Статусы заказа:
+  - Created (Создан)
+  - Confirmed (Подтвержден)
+  - Processing (Обрабатывается)
+  - Shipped (Отправлен)
+  - Delivered (Доставлен)
+  - Cancelled (Отменен)
+end note
+
+note right of Review
+  Статусы отзыва:
+  - Pending (На модерации)
+  - Approved (Одобрен)
+  - Rejected (Отклонен)
+end note
+
+note bottom of Product
+  Бизнес-правила:
+  - SKU должен быть уникальным
+  - in_stock >= 0
+  - reserved_stock <= in_stock
+  - discount_price < price
+end note
+
+@enduml
+

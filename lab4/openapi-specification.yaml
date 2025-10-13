@@ -1,0 +1,1353 @@
+openapi: 3.0.3
+info:
+  title: ТехноМарт API
+  description: |
+    REST API для интернет-магазина электроники ТехноМарт.
+    
+    ## Аутентификация
+    API использует JWT токены для аутентификации. Получите токен через `/api/v1/auth/login` 
+    и используйте его в заголовке `Authorization: Bearer <token>`.
+    
+    ## Rate Limiting
+    - Гостевые запросы: 100 req / 15 min
+    - Авторизованные: 1000 req / 15 min
+    
+    ## Поддержка
+    Email: support@technomart.com
+  version: 1.0.0
+  contact:
+    name: API Support
+    email: api@technomart.com
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+
+servers:
+  - url: https://api.technomart.com/api/v1
+    description: Production server
+  - url: https://staging-api.technomart.com/api/v1
+    description: Staging server
+  - url: http://localhost:3000/api/v1
+    description: Local development server
+
+tags:
+  - name: Auth
+    description: Аутентификация и авторизация
+  - name: Users
+    description: Управление профилем пользователя
+  - name: Products
+    description: Товары и каталог
+  - name: Categories
+    description: Категории товаров
+  - name: Brands
+    description: Бренды товаров
+  - name: Cart
+    description: Корзина покупок
+  - name: Orders
+    description: Заказы
+  - name: Reviews
+    description: Отзывы о товарах
+  - name: Compare
+    description: Сравнение товаров
+  - name: Admin
+    description: Администрирование (только для админов)
+
+paths:
+  # ==================== AUTH ====================
+  /auth/register:
+    post:
+      tags:
+        - Auth
+      summary: Регистрация нового пользователя
+      description: Создает нового пользователя и отправляет письмо с подтверждением email
+      operationId: registerUser
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+                - password
+                - firstName
+                - lastName
+              properties:
+                email:
+                  type: string
+                  format: email
+                  example: user@example.com
+                password:
+                  type: string
+                  format: password
+                  minLength: 8
+                  example: SecurePass123!
+                firstName:
+                  type: string
+                  minLength: 2
+                  maxLength: 100
+                  example: Иван
+                lastName:
+                  type: string
+                  minLength: 2
+                  maxLength: 100
+                  example: Петров
+                phone:
+                  type: string
+                  pattern: '^\+?[1-9]\d{1,14}$'
+                  example: '+79161234567'
+      responses:
+        '201':
+          description: Регистрация успешна
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: Регистрация успешна. Проверьте email для подтверждения.
+                  data:
+                    type: object
+                    properties:
+                      userId:
+                        type: string
+                        format: uuid
+                      email:
+                        type: string
+                        format: email
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '409':
+          description: Email уже зарегистрирован
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                success: false
+                error:
+                  code: EMAIL_EXISTS
+                  message: Пользователь с таким email уже существует
+
+  /auth/login:
+    post:
+      tags:
+        - Auth
+      summary: Вход в систему
+      description: Аутентифицирует пользователя и возвращает JWT токены
+      operationId: loginUser
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+                - password
+              properties:
+                email:
+                  type: string
+                  format: email
+                  example: user@example.com
+                password:
+                  type: string
+                  format: password
+                  example: SecurePass123!
+      responses:
+        '200':
+          description: Успешный вход
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: object
+                    properties:
+                      accessToken:
+                        type: string
+                        example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+                      refreshToken:
+                        type: string
+                        example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+                      user:
+                        $ref: '#/components/schemas/User'
+        '401':
+          description: Неверные учетные данные
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                success: false
+                error:
+                  code: INVALID_CREDENTIALS
+                  message: Неверный email или пароль
+
+  /auth/refresh:
+    post:
+      tags:
+        - Auth
+      summary: Обновление access токена
+      operationId: refreshToken
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - refreshToken
+              properties:
+                refreshToken:
+                  type: string
+      responses:
+        '200':
+          description: Токен обновлен
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: object
+                    properties:
+                      accessToken:
+                        type: string
+                      refreshToken:
+                        type: string
+
+  # ==================== USERS ====================
+  /users/me:
+    get:
+      tags:
+        - Users
+      summary: Получить профиль текущего пользователя
+      operationId: getCurrentUser
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Профиль пользователя
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    $ref: '#/components/schemas/User'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+    
+    put:
+      tags:
+        - Users
+      summary: Обновить профиль
+      operationId: updateCurrentUser
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                firstName:
+                  type: string
+                lastName:
+                  type: string
+                phone:
+                  type: string
+                dateOfBirth:
+                  type: string
+                  format: date
+                gender:
+                  type: string
+                  enum: [male, female, other]
+      responses:
+        '200':
+          description: Профиль обновлен
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    $ref: '#/components/schemas/User'
+
+  /users/me/addresses:
+    get:
+      tags:
+        - Users
+      summary: Получить адреса доставки
+      operationId: getUserAddresses
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Список адресов
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Address'
+    
+    post:
+      tags:
+        - Users
+      summary: Добавить адрес доставки
+      operationId: createAddress
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddressInput'
+      responses:
+        '201':
+          description: Адрес создан
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    $ref: '#/components/schemas/Address'
+
+  # ==================== PRODUCTS ====================
+  /products:
+    get:
+      tags:
+        - Products
+      summary: Получить список товаров
+      description: Возвращает список товаров с поддержкой фильтрации, сортировки и пагинации
+      operationId: getProducts
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 1
+            minimum: 1
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 20
+            minimum: 1
+            maximum: 100
+        - name: category
+          in: query
+          description: UUID категории
+          schema:
+            type: string
+            format: uuid
+        - name: brand
+          in: query
+          description: UUID бренда
+          schema:
+            type: string
+            format: uuid
+        - name: minPrice
+          in: query
+          schema:
+            type: number
+            minimum: 0
+        - name: maxPrice
+          in: query
+          schema:
+            type: number
+            minimum: 0
+        - name: inStock
+          in: query
+          description: Только товары в наличии
+          schema:
+            type: boolean
+        - name: sort
+          in: query
+          description: Сортировка результатов
+          schema:
+            type: string
+            enum: [price_asc, price_desc, rating, newest, popular]
+            default: popular
+      responses:
+        '200':
+          description: Список товаров
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: object
+                    properties:
+                      products:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/ProductShort'
+                      pagination:
+                        $ref: '#/components/schemas/Pagination'
+                      filters:
+                        type: object
+                        properties:
+                          categories:
+                            type: array
+                            items:
+                              $ref: '#/components/schemas/CategoryShort'
+                          brands:
+                            type: array
+                            items:
+                              $ref: '#/components/schemas/BrandShort'
+                          priceRange:
+                            type: object
+                            properties:
+                              min:
+                                type: number
+                              max:
+                                type: number
+        '400':
+          $ref: '#/components/responses/BadRequest'
+
+  /products/search:
+    get:
+      tags:
+        - Products
+      summary: Поиск товаров
+      description: Полнотекстовый поиск товаров по названию, описанию и характеристикам
+      operationId: searchProducts
+      parameters:
+        - name: q
+          in: query
+          required: true
+          description: Поисковый запрос
+          schema:
+            type: string
+            minLength: 2
+          example: iPhone 15
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 1
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 20
+      responses:
+        '200':
+          description: Результаты поиска
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: object
+                    properties:
+                      products:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/ProductShort'
+                      pagination:
+                        $ref: '#/components/schemas/Pagination'
+                      query:
+                        type: string
+                      foundCount:
+                        type: integer
+
+  /products/{id}:
+    get:
+      tags:
+        - Products
+      summary: Получить товар по ID
+      description: Возвращает детальную информацию о товаре
+      operationId: getProductById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Детали товара
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    $ref: '#/components/schemas/ProductFull'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  # ==================== CART ====================
+  /cart:
+    get:
+      tags:
+        - Cart
+      summary: Получить корзину
+      operationId: getCart
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Корзина пользователя
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    $ref: '#/components/schemas/Cart'
+    
+    delete:
+      tags:
+        - Cart
+      summary: Очистить корзину
+      operationId: clearCart
+      security:
+        - bearerAuth: []
+      responses:
+        '204':
+          description: Корзина очищена
+
+  /cart/items:
+    post:
+      tags:
+        - Cart
+      summary: Добавить товар в корзину
+      operationId: addToCart
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - productId
+                - quantity
+              properties:
+                productId:
+                  type: string
+                  format: uuid
+                quantity:
+                  type: integer
+                  minimum: 1
+                  maximum: 99
+                  example: 1
+      responses:
+        '201':
+          description: Товар добавлен в корзину
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    $ref: '#/components/schemas/CartItem'
+        '400':
+          description: Недостаточно товара на складе
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  # ==================== ORDERS ====================
+  /orders:
+    get:
+      tags:
+        - Orders
+      summary: Получить список заказов пользователя
+      operationId: getOrders
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [created, confirmed, processing, shipped, delivered, cancelled]
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 1
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 20
+      responses:
+        '200':
+          description: Список заказов
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: object
+                    properties:
+                      orders:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/OrderShort'
+                      pagination:
+                        $ref: '#/components/schemas/Pagination'
+    
+    post:
+      tags:
+        - Orders
+      summary: Создать заказ
+      description: Создает новый заказ на основе текущей корзины
+      operationId: createOrder
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OrderCreate'
+      responses:
+        '201':
+          description: Заказ создан
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                        format: uuid
+                      orderNumber:
+                        type: string
+                      status:
+                        type: string
+                      totalAmount:
+                        type: number
+                      paymentUrl:
+                        type: string
+                        format: uri
+                      createdAt:
+                        type: string
+                        format: date-time
+        '400':
+          $ref: '#/components/responses/BadRequest'
+
+  /orders/{id}:
+    get:
+      tags:
+        - Orders
+      summary: Получить заказ по ID
+      operationId: getOrderById
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Детали заказа
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    $ref: '#/components/schemas/OrderFull'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /orders/{id}/cancel:
+    put:
+      tags:
+        - Orders
+      summary: Отменить заказ
+      operationId: cancelOrder
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - reason
+              properties:
+                reason:
+                  type: string
+                  minLength: 10
+                  maxLength: 500
+                  example: Передумал покупать
+      responses:
+        '200':
+          description: Заказ отменен
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                        format: uuid
+                      status:
+                        type: string
+                        example: cancelled
+        '400':
+          description: Заказ нельзя отменить
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  # ==================== REVIEWS ====================
+  /reviews:
+    get:
+      tags:
+        - Reviews
+      summary: Получить список отзывов
+      operationId: getReviews
+      parameters:
+        - name: productId
+          in: query
+          schema:
+            type: string
+            format: uuid
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [pending, approved, rejected]
+        - name: rating
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 5
+        - name: sort
+          in: query
+          schema:
+            type: string
+            enum: [helpful, newest, oldest, rating_high, rating_low]
+            default: helpful
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 1
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 20
+      responses:
+        '200':
+          description: Список отзывов
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: object
+                    properties:
+                      reviews:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/Review'
+                      pagination:
+                        $ref: '#/components/schemas/Pagination'
+    
+    post:
+      tags:
+        - Reviews
+      summary: Создать отзыв
+      operationId: createReview
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReviewCreate'
+      responses:
+        '201':
+          description: Отзыв создан
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+                  data:
+                    $ref: '#/components/schemas/Review'
+        '403':
+          description: Нельзя оставить отзыв (товар не куплен)
+
+# ==================== COMPONENTS ====================
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    # ===== User =====
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        email:
+          type: string
+          format: email
+        firstName:
+          type: string
+        lastName:
+          type: string
+        phone:
+          type: string
+        dateOfBirth:
+          type: string
+          format: date
+        gender:
+          type: string
+          enum: [male, female, other]
+        role:
+          type: string
+          enum: [customer, manager, admin, courier]
+        isActive:
+          type: boolean
+        createdAt:
+          type: string
+          format: date-time
+
+    # ===== Address =====
+    Address:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        country:
+          type: string
+        city:
+          type: string
+        street:
+          type: string
+        building:
+          type: string
+        apartment:
+          type: string
+        postalCode:
+          type: string
+        isDefault:
+          type: boolean
+        createdAt:
+          type: string
+          format: date-time
+    
+    AddressInput:
+      type: object
+      required:
+        - country
+        - city
+        - street
+        - building
+      properties:
+        country:
+          type: string
+          example: Россия
+        city:
+          type: string
+          example: Москва
+        street:
+          type: string
+          example: Тверская
+        building:
+          type: string
+          example: '1'
+        apartment:
+          type: string
+          example: '10'
+        postalCode:
+          type: string
+          example: '125009'
+        isDefault:
+          type: boolean
+          default: false
+
+    # ===== Product =====
+    ProductShort:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        shortDescription:
+          type: string
+        price:
+          type: number
+          format: decimal
+        discountPrice:
+          type: number
+          format: decimal
+        sku:
+          type: string
+        inStock:
+          type: integer
+        isActive:
+          type: boolean
+        category:
+          $ref: '#/components/schemas/CategoryShort'
+        brand:
+          $ref: '#/components/schemas/BrandShort'
+        mainImage:
+          type: string
+          format: uri
+        rating:
+          type: object
+          properties:
+            average:
+              type: number
+            totalReviews:
+              type: integer
+
+    ProductFull:
+      allOf:
+        - $ref: '#/components/schemas/ProductShort'
+        - type: object
+          properties:
+            description:
+              type: string
+            weight:
+              type: number
+            dimensions:
+              type: string
+            images:
+              type: array
+              items:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    format: uuid
+                  url:
+                    type: string
+                    format: uri
+                  altText:
+                    type: string
+                  isMain:
+                    type: boolean
+            characteristics:
+              type: array
+              items:
+                type: object
+                properties:
+                  name:
+                    type: string
+                  value:
+                    type: string
+                  unit:
+                    type: string
+            createdAt:
+              type: string
+              format: date-time
+            updatedAt:
+              type: string
+              format: date-time
+
+    # ===== Category =====
+    CategoryShort:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        slug:
+          type: string
+
+    BrandShort:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        logo:
+          type: string
+          format: uri
+
+    # ===== Cart =====
+    Cart:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/CartItem'
+        summary:
+          type: object
+          properties:
+            itemsCount:
+              type: integer
+            subtotal:
+              type: number
+            discount:
+              type: number
+            total:
+              type: number
+
+    CartItem:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        product:
+          $ref: '#/components/schemas/ProductShort'
+        quantity:
+          type: integer
+        subtotal:
+          type: number
+        addedAt:
+          type: string
+          format: date-time
+
+    # ===== Order =====
+    OrderShort:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        orderNumber:
+          type: string
+        status:
+          type: string
+          enum: [created, confirmed, processing, shipped, delivered, cancelled]
+        totalAmount:
+          type: number
+        createdAt:
+          type: string
+          format: date-time
+
+    OrderFull:
+      allOf:
+        - $ref: '#/components/schemas/OrderShort'
+        - type: object
+          properties:
+            discountAmount:
+              type: number
+            deliveryAmount:
+              type: number
+            paymentMethod:
+              type: string
+              enum: [card, cash, installment]
+            deliveryMethod:
+              type: string
+              enum: [courier, pickup, post]
+            deliveryAddress:
+              type: object
+            items:
+              type: array
+              items:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    format: uuid
+                  product:
+                    $ref: '#/components/schemas/ProductShort'
+                  quantity:
+                    type: integer
+                  unitPrice:
+                    type: number
+                  totalPrice:
+                    type: number
+            payment:
+              type: object
+            delivery:
+              type: object
+            statusHistory:
+              type: array
+              items:
+                type: object
+                properties:
+                  status:
+                    type: string
+                  timestamp:
+                    type: string
+                    format: date-time
+
+    OrderCreate:
+      type: object
+      required:
+        - deliveryAddress
+        - deliveryMethod
+        - paymentMethod
+      properties:
+        deliveryAddress:
+          $ref: '#/components/schemas/AddressInput'
+        deliveryMethod:
+          type: string
+          enum: [courier, pickup, post]
+        paymentMethod:
+          type: string
+          enum: [card, cash, installment]
+        notes:
+          type: string
+          maxLength: 500
+
+    # ===== Review =====
+    Review:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        product:
+          $ref: '#/components/schemas/ProductShort'
+        user:
+          type: object
+          properties:
+            id:
+              type: string
+              format: uuid
+            firstName:
+              type: string
+            lastName:
+              type: string
+        rating:
+          type: integer
+          minimum: 1
+          maximum: 5
+        title:
+          type: string
+        content:
+          type: string
+        pros:
+          type: string
+        cons:
+          type: string
+        isRecommended:
+          type: boolean
+        status:
+          type: string
+          enum: [pending, approved, rejected]
+        images:
+          type: array
+          items:
+            type: object
+            properties:
+              url:
+                type: string
+                format: uri
+              caption:
+                type: string
+        helpfulness:
+          type: object
+          properties:
+            helpful:
+              type: integer
+            notHelpful:
+              type: integer
+        createdAt:
+          type: string
+          format: date-time
+
+    ReviewCreate:
+      type: object
+      required:
+        - productId
+        - rating
+      properties:
+        productId:
+          type: string
+          format: uuid
+        rating:
+          type: integer
+          minimum: 1
+          maximum: 5
+        title:
+          type: string
+          maxLength: 500
+        content:
+          type: string
+        pros:
+          type: string
+        cons:
+          type: string
+        isRecommended:
+          type: boolean
+        images:
+          type: array
+          items:
+            type: string
+            format: uri
+
+    # ===== Pagination =====
+    Pagination:
+      type: object
+      properties:
+        page:
+          type: integer
+        limit:
+          type: integer
+        total:
+          type: integer
+        totalPages:
+          type: integer
+
+    # ===== Error =====
+    Error:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: false
+        error:
+          type: object
+          properties:
+            code:
+              type: string
+            message:
+              type: string
+            details:
+              type: array
+              items:
+                type: object
+
+  responses:
+    BadRequest:
+      description: Невалидные данные в запросе
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+
+    Unauthorized:
+      description: Не авторизован
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            success: false
+            error:
+              code: UNAUTHORIZED
+              message: Требуется аутентификация
+
+    Forbidden:
+      description: Нет прав доступа
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            success: false
+            error:
+              code: FORBIDDEN
+              message: Недостаточно прав для выполнения операции
+
+    NotFound:
+      description: Ресурс не найден
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            success: false
+            error:
+              code: NOT_FOUND
+              message: Ресурс не найден
+
