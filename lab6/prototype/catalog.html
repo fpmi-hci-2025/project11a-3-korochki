@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Каталог товаров - ТехноМарт</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .catalog-layout {
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            gap: 30px;
+            margin-top: 30px;
+        }
+
+        /* Filters */
+        .filters {
+            background: white;
+            padding: 24px;
+            border-radius: 12px;
+            height: fit-content;
+            position: sticky;
+            top: 90px;
+        }
+
+        .filter-group {
+            margin-bottom: 24px;
+            padding-bottom: 24px;
+            border-bottom: 1px solid #E5E7EB;
+        }
+
+        .filter-group:last-child {
+            border-bottom: none;
+        }
+
+        .filter-group h3 {
+            font-size: 16px;
+            margin-bottom: 12px;
+            color: #1F2937;
+        }
+
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 8px;
+            cursor: pointer;
+        }
+
+        .checkbox-item input {
+            margin-right: 8px;
+        }
+
+        .price-range {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .price-range input {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #E5E7EB;
+            border-radius: 6px;
+        }
+
+        .filter-btn {
+            width: 100%;
+            padding: 10px;
+            background: #2E5BFF;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            margin-top: 16px;
+        }
+
+        .filter-btn:hover {
+            background: #1E3A8A;
+        }
+
+        .clear-filters {
+            width: 100%;
+            padding: 10px;
+            background: white;
+            color: #6B7280;
+            border: 1px solid #E5E7EB;
+            border-radius: 6px;
+            cursor: pointer;
+            margin-top: 8px;
+        }
+
+        /* Catalog Content */
+        .catalog-content {
+            min-height: 600px;
+        }
+
+        .catalog-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .sort-select {
+            padding: 10px 16px;
+            border: 1px solid #E5E7EB;
+            border-radius: 6px;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        .view-toggle {
+            display: flex;
+            gap: 8px;
+        }
+
+        .view-btn {
+            padding: 8px 12px;
+            background: white;
+            border: 1px solid #E5E7EB;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        .view-btn.active {
+            background: #2E5BFF;
+            color: white;
+            border-color: #2E5BFF;
+        }
+
+        .products-count {
+            color: #6B7280;
+            font-size: 14px;
+        }
+
+        /* Breadcrumbs */
+        .breadcrumbs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            color: #6B7280;
+        }
+
+        .breadcrumbs a {
+            color: #2E5BFF;
+            text-decoration: none;
+        }
+
+        .breadcrumbs a:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 768px) {
+            .catalog-layout {
+                grid-template-columns: 1fr;
+            }
+
+            .filters {
+                position: static;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header (same as index.html) -->
+    <header class="header">
+        <div class="header-top">
+            <div class="header-container">
+                <span>📞 +375 29 123-45-67</span>
+                <span>🚚 Бесплатная доставка от 200 Br</span>
+            </div>
+        </div>
+        
+        <div class="header-container" style="padding: 15px 20px;">
+            <a href="index.html" class="logo">ТехноМарт</a>
+            
+            <div class="search-bar">
+                <input type="text" id="searchInput" placeholder="Поиск товаров...">
+                <button class="search-btn" onclick="applySearch()">🔍</button>
+            </div>
+            
+            <div class="header-icons">
+                <button class="icon-btn" onclick="goToComparison()">
+                    ⚖️
+                    <span class="badge" id="compareCount">0</span>
+                </button>
+                <button class="icon-btn" onclick="goToFavorites()">
+                    ❤️
+                    <span class="badge" id="favoriteCount">0</span>
+                </button>
+                <button class="icon-btn" onclick="goToCart()">
+                    🛒
+                    <span class="badge" id="cartCount">0</span>
+                </button>
+                <button class="icon-btn" onclick="goToProfile()">
+                    👤
+                </button>
+            </div>
+        </div>
+        
+        <nav class="nav-menu">
+            <ul>
+                <li><a href="catalog.html">Каталог</a></li>
+                <li><a href="sales.html">Акции и скидки</a></li>
+                <li><a href="help.html">Помощь и сервис</a></li>
+                <li><a href="about.html">О компании</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <div class="container">
+        <div class="breadcrumbs">
+            <a href="index.html">Главная</a>
+            <span>/</span>
+            <span id="breadcrumbCategory">Каталог</span>
+        </div>
+
+        <h1 id="pageTitle">Каталог товаров</h1>
+
+        <div class="catalog-layout">
+            <!-- Filters -->
+            <aside class="filters">
+                <div class="filter-group">
+                    <h3>Категория</h3>
+                    <label class="checkbox-item">
+                        <input type="checkbox" name="category" value="smartphones" onchange="applyFilters()">
+                        Смартфоны
+                    </label>
+                    <label class="checkbox-item">
+                        <input type="checkbox" name="category" value="laptops" onchange="applyFilters()">
+                        Ноутбуки
+                    </label>
+                    <label class="checkbox-item">
+                        <input type="checkbox" name="category" value="headphones" onchange="applyFilters()">
+                        Наушники
+                    </label>
+                    <label class="checkbox-item">
+                        <input type="checkbox" name="category" value="tablets" onchange="applyFilters()">
+                        Планшеты
+                    </label>
+                    <label class="checkbox-item">
+                        <input type="checkbox" name="category" value="watches" onchange="applyFilters()">
+                        Умные часы
+                    </label>
+                    <label class="checkbox-item">
+                        <input type="checkbox" name="category" value="tv" onchange="applyFilters()">
+                        Телевизоры
+                    </label>
+                </div>
+
+                <div class="filter-group">
+                    <h3>Цена (Br)</h3>
+                    <div class="price-range">
+                        <input type="number" id="priceMin" placeholder="От" value="0">
+                        <span>—</span>
+                        <input type="number" id="priceMax" placeholder="До" value="10000">
+                    </div>
+                </div>
+
+                <div class="filter-group">
+                    <h3>Бренд</h3>
+                    <label class="checkbox-item">
+                        <input type="checkbox" name="brand" value="apple" onchange="applyFilters()">
+                        Apple
+                    </label>
+                    <label class="checkbox-item">
+                        <input type="checkbox" name="brand" value="samsung" onchange="applyFilters()">
+                        Samsung
+                    </label>
+                    <label class="checkbox-item">
+                        <input type="checkbox" name="brand" value="xiaomi" onchange="applyFilters()">
+                        Xiaomi
+                    </label>
+                    <label class="checkbox-item">
+                        <input type="checkbox" name="brand" value="sony" onchange="applyFilters()">
+                        Sony
+                    </label>
+                </div>
+
+                <div class="filter-group">
+                    <h3>Рейтинг</h3>
+                    <label class="checkbox-item">
+                        <input type="checkbox" name="rating" value="5" onchange="applyFilters()">
+                        ⭐⭐⭐⭐⭐
+                    </label>
+                    <label class="checkbox-item">
+                        <input type="checkbox" name="rating" value="4" onchange="applyFilters()">
+                        ⭐⭐⭐⭐ и выше
+                    </label>
+                </div>
+
+                <button class="filter-btn" onclick="applyFilters()">Применить фильтры</button>
+                <button class="clear-filters" onclick="clearFilters()">Сбросить</button>
+            </aside>
+
+            <!-- Catalog Content -->
+            <main class="catalog-content">
+                <div class="catalog-header">
+                    <div>
+                        <span class="products-count" id="productsCount">Найдено товаров: 0</span>
+                    </div>
+                    <div style="display: flex; gap: 16px; align-items: center;">
+                        <select class="sort-select" id="sortSelect" onchange="applySort()">
+                            <option value="popular">По популярности</option>
+                            <option value="price-asc">По цене: сначала дешёвые</option>
+                            <option value="price-desc">По цене: сначала дорогие</option>
+                            <option value="rating">По рейтингу</option>
+                            <option value="new">Сначала новые</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="products-grid" id="catalogGrid">
+                    <!-- Products will be loaded here -->
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <div>
+                <h4>О компании</h4>
+                <ul>
+                    <li><a href="about.html">О нас</a></li>
+                    <li><a href="contacts.html">Контакты</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4>Помощь</h4>
+                <ul>
+                    <li><a href="delivery.html">Доставка и оплата</a></li>
+                    <li><a href="guarantee.html">Гарантия и возврат</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            ТехноМарт - Интернет-магазин электроники
+        </div>
+    </footer>
+
+    <div class="notification" id="notification"></div>
+
+    <script src="common.js"></script>
+    <script src="products-data.js"></script>
+    <script>
+        let filteredProducts = [...allProducts];
+
+        function loadCatalog() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const category = urlParams.get('cat');
+            const search = urlParams.get('search');
+
+            if (category) {
+                document.getElementById('pageTitle').textContent = getCategoryName(category);
+                document.getElementById('breadcrumbCategory').textContent = getCategoryName(category);
+                const checkbox = document.querySelector(`input[name="category"][value="${category}"]`);
+                if (checkbox) checkbox.checked = true;
+            }
+
+            if (search) {
+                document.getElementById('searchInput').value = search;
+                document.getElementById('pageTitle').textContent = `Результаты поиска: "${search}"`;
+            }
+
+            applyFilters();
+        }
+
+        function getCategoryName(cat) {
+            const names = {
+                'smartphones': 'Смартфоны',
+                'laptops': 'Ноутбуки',
+                'headphones': 'Наушники',
+                'tablets': 'Планшеты',
+                'watches': 'Умные часы',
+                'tv': 'Телевизоры'
+            };
+            return names[cat] || 'Каталог';
+        }
+
+        function applyFilters() {
+            const categories = Array.from(document.querySelectorAll('input[name="category"]:checked')).map(el => el.value);
+            const brands = Array.from(document.querySelectorAll('input[name="brand"]:checked')).map(el => el.value);
+            const ratings = Array.from(document.querySelectorAll('input[name="rating"]:checked')).map(el => parseInt(el.value));
+            const minPrice = parseInt(document.getElementById('priceMin').value) || 0;
+            const maxPrice = parseInt(document.getElementById('priceMax').value) || 999999;
+            const searchQuery = document.getElementById('searchInput').value.toLowerCase();
+
+            filteredProducts = allProducts.filter(product => {
+                // Category filter
+                if (categories.length > 0 && !categories.includes(product.category)) {
+                    return false;
+                }
+
+                // Brand filter
+                if (brands.length > 0 && !brands.includes(product.brand)) {
+                    return false;
+                }
+
+                // Rating filter
+                if (ratings.length > 0 && !ratings.some(r => product.rating >= r)) {
+                    return false;
+                }
+
+                // Price filter
+                if (product.price < minPrice || product.price > maxPrice) {
+                    return false;
+                }
+
+                // Search filter
+                if (searchQuery && !product.name.toLowerCase().includes(searchQuery)) {
+                    return false;
+                }
+
+                return true;
+            });
+
+            applySort();
+        }
+
+        function applySort() {
+            const sortType = document.getElementById('sortSelect').value;
+            
+            switch(sortType) {
+                case 'price-asc':
+                    filteredProducts.sort((a, b) => a.price - b.price);
+                    break;
+                case 'price-desc':
+                    filteredProducts.sort((a, b) => b.price - a.price);
+                    break;
+                case 'rating':
+                    filteredProducts.sort((a, b) => b.rating - a.rating);
+                    break;
+                case 'new':
+                    filteredProducts.sort((a, b) => b.id - a.id);
+                    break;
+                default: // popular
+                    filteredProducts.sort((a, b) => a.id - b.id);
+            }
+
+            renderProducts();
+        }
+
+        function renderProducts() {
+            const grid = document.getElementById('catalogGrid');
+            grid.innerHTML = '';
+            
+            document.getElementById('productsCount').textContent = `Найдено товаров: ${filteredProducts.length}`;
+
+            filteredProducts.forEach(product => {
+                const card = createProductCard(product);
+                grid.appendChild(card);
+            });
+
+            if (filteredProducts.length === 0) {
+                grid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 60px 20px; color: #6B7280;"><h3>Товары не найдены</h3><p>Попробуйте изменить фильтры</p></div>';
+            }
+        }
+
+        function clearFilters() {
+            document.querySelectorAll('input[type="checkbox"]').forEach(el => el.checked = false);
+            document.getElementById('priceMin').value = 0;
+            document.getElementById('priceMax').value = 10000;
+            document.getElementById('searchInput').value = '';
+            document.getElementById('sortSelect').value = 'popular';
+            applyFilters();
+        }
+
+        function applySearch() {
+            applyFilters();
+        }
+
+        loadCatalog();
+        updateBadges();
+    </script>
+</body>
+</html>
+

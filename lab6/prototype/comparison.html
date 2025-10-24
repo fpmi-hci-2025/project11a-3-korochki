@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Сравнение товаров - ТехноМарт</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .comparison-table-wrapper {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            overflow-x: auto;
+        }
+
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 800px;
+        }
+
+        .comparison-table th,
+        .comparison-table td {
+            padding: 16px;
+            text-align: left;
+            border-bottom: 1px solid #E5E7EB;
+        }
+
+        .comparison-table th {
+            background: #F9FAFB;
+            font-weight: 600;
+            color: #1F2937;
+            position: sticky;
+            left: 0;
+            z-index: 1;
+        }
+
+        .comparison-product-cell {
+            text-align: center;
+            min-width: 250px;
+        }
+
+        .comparison-product-image {
+            width: 120px;
+            height: 120px;
+            background: #F3F4F6;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 64px;
+            margin: 0 auto 12px;
+        }
+
+        .comparison-product-name {
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: #1F2937;
+        }
+
+        .comparison-product-price {
+            font-size: 24px;
+            font-weight: 700;
+            color: #10B981;
+            margin-bottom: 12px;
+        }
+
+        .comparison-remove {
+            background: #FEE2E2;
+            color: #991B1B;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+
+        .comparison-remove:hover {
+            background: #FCA5A5;
+        }
+
+        .spec-row-label {
+            font-weight: 500;
+            color: #6B7280;
+        }
+
+        .spec-value {
+            text-align: center;
+            color: #1F2937;
+        }
+
+        .empty-slot {
+            text-align: center;
+            padding: 40px;
+            color: #9CA3AF;
+            background: #F9FAFB;
+            border-radius: 8px;
+            min-width: 250px;
+        }
+
+        .empty-slot-icon {
+            font-size: 48px;
+            margin-bottom: 12px;
+        }
+
+        @media (max-width: 768px) {
+            .comparison-table-wrapper {
+                padding: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="header-top">
+            <div class="header-container">
+                <span>📞 +375 29 123-45-67</span>
+                <span>🚚 Бесплатная доставка от 200 Br</span>
+            </div>
+        </div>
+        
+        <div class="header-container" style="padding: 15px 20px;">
+            <a href="index.html" class="logo">ТехноМарт</a>
+            
+            <div class="search-bar">
+                <input type="text" id="searchInput" placeholder="Поиск товаров...">
+                <button class="search-btn" onclick="goToSearch()">🔍</button>
+            </div>
+            
+            <div class="header-icons">
+                <button class="icon-btn" onclick="goToComparison()">
+                    ⚖️
+                    <span class="badge" id="compareCount">0</span>
+                </button>
+                <button class="icon-btn" onclick="goToFavorites()">
+                    ❤️
+                    <span class="badge" id="favoriteCount">0</span>
+                </button>
+                <button class="icon-btn" onclick="goToCart()">
+                    🛒
+                    <span class="badge" id="cartCount">0</span>
+                </button>
+                <button class="icon-btn" onclick="goToProfile()">
+                    👤
+                </button>
+            </div>
+        </div>
+        
+        <nav class="nav-menu">
+            <ul>
+                <li><a href="catalog.html">Каталог</a></li>
+                <li><a href="sales.html">Акции и скидки</a></li>
+                <li><a href="help.html">Помощь и сервис</a></li>
+                <li><a href="about.html">О компании</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <div class="container">
+        <div class="breadcrumbs">
+            <a href="index.html">Главная</a>
+            <span>/</span>
+            <span>Сравнение товаров</span>
+        </div>
+
+        <h1>Сравнение товаров</h1>
+
+        <div id="comparisonContent"></div>
+    </div>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <div>
+                <h4>О компании</h4>
+                <ul>
+                    <li><a href="about.html">О нас</a></li>
+                    <li><a href="contacts.html">Контакты</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4>Помощь</h4>
+                <ul>
+                    <li><a href="delivery.html">Доставка и оплата</a></li>
+                    <li><a href="guarantee.html">Гарантия и возврат</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            ТехноМарт - Интернет-магазин электроники
+        </div>
+    </footer>
+
+    <div class="notification" id="notification"></div>
+
+    <script src="products-data.js"></script>
+    <script src="common.js"></script>
+    <script>
+        function loadComparison() {
+            const container = document.getElementById('comparisonContent');
+            
+            if (comparison.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">⚖️</div>
+                        <h2>Список сравнения пуст</h2>
+                        <p>Добавьте товары для сравнения, чтобы выбрать лучший вариант</p>
+                        <a href="catalog.html" class="btn-primary" style="display: inline-block; width: auto;">Перейти в каталог</a>
+                    </div>
+                `;
+                return;
+            }
+
+            const comparisonProducts = getProductsByIds(comparison);
+            
+            // Collect all unique spec keys
+            const allSpecs = new Set();
+            comparisonProducts.forEach(product => {
+                Object.keys(product.specs).forEach(key => allSpecs.add(key));
+            });
+
+            // Build comparison table
+            let tableHTML = `
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+                    <p style="color: #6B7280;">Сравнение ${comparison.length} товаров</p>
+                    <button class="btn-secondary" onclick="clearComparison()">Очистить список</button>
+                </div>
+                <div class="comparison-table-wrapper">
+                    <table class="comparison-table">
+                        <thead>
+                            <tr>
+                                <th>Товар</th>
+                                ${comparisonProducts.map(p => `
+                                    <td class="comparison-product-cell">
+                                        <div class="comparison-product-image">${p.image}</div>
+                                        <div class="comparison-product-name">${p.name}</div>
+                                        <div class="comparison-product-price">${p.price} Br</div>
+                                        <button class="btn-primary" onclick="addToCart(${p.id})" style="margin-bottom: 8px; font-size: 14px; padding: 8px 16px;">В корзину</button>
+                                        <br>
+                                        <button class="comparison-remove" onclick="removeFromComparison(${p.id})">Удалить</button>
+                                    </td>
+                                `).join('')}
+                                ${Array(4 - comparisonProducts.length).fill(0).map(() => `
+                                    <td class="comparison-product-cell">
+                                        <div class="empty-slot">
+                                            <div class="empty-slot-icon">➕</div>
+                                            <p>Добавьте товар</p>
+                                        </div>
+                                    </td>
+                                `).join('')}
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <th class="spec-row-label">Рейтинг</th>
+                                ${comparisonProducts.map(p => `
+                                    <td class="spec-value">${'⭐'.repeat(p.rating)}</td>
+                                `).join('')}
+                                ${Array(4 - comparisonProducts.length).fill(0).map(() => `<td class="spec-value">—</td>`).join('')}
+                            </tr>
+                            <tr>
+                                <th class="spec-row-label">Наличие</th>
+                                ${comparisonProducts.map(p => `
+                                    <td class="spec-value" style="color: ${p.inStock ? '#10B981' : '#EF4444'}">
+                                        ${p.inStock ? '✓ В наличии' : '✗ Нет в наличии'}
+                                    </td>
+                                `).join('')}
+                                ${Array(4 - comparisonProducts.length).fill(0).map(() => `<td class="spec-value">—</td>`).join('')}
+                            </tr>
+                            ${Array.from(allSpecs).map(specKey => `
+                                <tr>
+                                    <th class="spec-row-label">${specKey}</th>
+                                    ${comparisonProducts.map(p => `
+                                        <td class="spec-value">${p.specs[specKey] || '—'}</td>
+                                    `).join('')}
+                                    ${Array(4 - comparisonProducts.length).fill(0).map(() => `<td class="spec-value">—</td>`).join('')}
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            `;
+
+            container.innerHTML = tableHTML;
+        }
+
+        function removeFromComparison(productId) {
+            toggleCompare(productId);
+            loadComparison();
+        }
+
+        function clearComparison() {
+            if (confirm('Очистить список сравнения?')) {
+                comparison = [];
+                localStorage.setItem('comparison', JSON.stringify(comparison));
+                updateBadges();
+                loadComparison();
+                showNotification('Список сравнения очищен');
+            }
+        }
+
+        function goToSearch() {
+            const query = document.getElementById('searchInput').value;
+            window.location.href = `catalog.html?search=${encodeURIComponent(query)}`;
+        }
+
+        loadComparison();
+    </script>
+</body>
+</html>
+

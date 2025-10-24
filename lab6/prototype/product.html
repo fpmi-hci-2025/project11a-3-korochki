@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title id="pageTitle">Товар - ТехноМарт</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .product-layout {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            background: white;
+            padding: 40px;
+            border-radius: 12px;
+            margin-bottom: 40px;
+        }
+
+        .product-image-large {
+            width: 100%;
+            height: 400px;
+            background: #F3F4F6;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 200px;
+        }
+
+        .product-details h1 {
+            font-size: 32px;
+            margin-bottom: 16px;
+            color: #1F2937;
+        }
+
+        .product-rating-large {
+            font-size: 20px;
+            color: #F59E0B;
+            margin-bottom: 16px;
+        }
+
+        .product-price-large {
+            font-size: 42px;
+            font-weight: 700;
+            color: #10B981;
+            margin-bottom: 8px;
+        }
+
+        .product-old-price-large {
+            font-size: 24px;
+            text-decoration: line-through;
+            color: #9CA3AF;
+            margin-bottom: 20px;
+        }
+
+        .product-description {
+            color: #6B7280;
+            line-height: 1.8;
+            margin-bottom: 24px;
+        }
+
+        .product-specs {
+            background: #F9FAFB;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 24px;
+        }
+
+        .product-specs h3 {
+            margin-bottom: 16px;
+            color: #1F2937;
+        }
+
+        .spec-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid #E5E7EB;
+        }
+
+        .spec-row:last-child {
+            border-bottom: none;
+        }
+
+        .spec-label {
+            color: #6B7280;
+            font-weight: 500;
+        }
+
+        .spec-value {
+            color: #1F2937;
+            font-weight: 600;
+        }
+
+        .product-actions-large {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .quantity-selector {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .quantity-btn {
+            width: 40px;
+            height: 40px;
+            border: 2px solid #E5E7EB;
+            background: white;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 20px;
+            transition: all 0.2s;
+        }
+
+        .quantity-btn:hover {
+            border-color: #2E5BFF;
+            color: #2E5BFF;
+        }
+
+        .quantity-input {
+            width: 60px;
+            text-align: center;
+            font-size: 18px;
+            font-weight: 600;
+            border: 2px solid #E5E7EB;
+            border-radius: 8px;
+            padding: 8px;
+        }
+
+        .stock-status {
+            display: inline-block;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+
+        .stock-status.in-stock {
+            background: #D1FAE5;
+            color: #065F46;
+        }
+
+        .stock-status.out-of-stock {
+            background: #FEE2E2;
+            color: #991B1B;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 20px;
+            border-bottom: 2px solid #E5E7EB;
+            margin-bottom: 30px;
+        }
+
+        .tab {
+            padding: 12px 24px;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            transition: all 0.2s;
+            font-weight: 500;
+            color: #6B7280;
+        }
+
+        .tab.active {
+            color: #2E5BFF;
+            border-bottom-color: #2E5BFF;
+        }
+
+        .tab-content {
+            display: none;
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .review {
+            border-bottom: 1px solid #E5E7EB;
+            padding: 20px 0;
+        }
+
+        .review:last-child {
+            border-bottom: none;
+        }
+
+        .review-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 12px;
+        }
+
+        .review-author {
+            font-weight: 600;
+            color: #1F2937;
+        }
+
+        .review-date {
+            color: #9CA3AF;
+            font-size: 14px;
+        }
+
+        .review-rating {
+            color: #F59E0B;
+            margin-bottom: 8px;
+        }
+
+        .review-text {
+            color: #4B5563;
+            line-height: 1.6;
+        }
+
+        .review-form {
+            background: #F9FAFB;
+            padding: 24px;
+            border-radius: 8px;
+            margin-top: 30px;
+        }
+
+        .review-form h3 {
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .rating-input {
+            display: flex;
+            gap: 8px;
+            margin-top: 8px;
+        }
+
+        .rating-star {
+            font-size: 32px;
+            cursor: pointer;
+            color: #D1D5DB;
+            transition: color 0.2s;
+        }
+
+        .rating-star:hover,
+        .rating-star.active {
+            color: #F59E0B;
+        }
+
+        @media (max-width: 768px) {
+            .product-layout {
+                grid-template-columns: 1fr;
+                padding: 20px;
+            }
+
+            .product-image-large {
+                height: 300px;
+                font-size: 120px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="header-top">
+            <div class="header-container">
+                <span>📞 +375 29 123-45-67</span>
+                <span>🚚 Бесплатная доставка от 200 Br</span>
+            </div>
+        </div>
+        
+        <div class="header-container" style="padding: 15px 20px;">
+            <a href="index.html" class="logo">ТехноМарт</a>
+            
+            <div class="search-bar">
+                <input type="text" id="searchInput" placeholder="Поиск товаров...">
+                <button class="search-btn" onclick="goToSearch()">🔍</button>
+            </div>
+            
+            <div class="header-icons">
+                <button class="icon-btn" onclick="goToComparison()">
+                    ⚖️
+                    <span class="badge" id="compareCount">0</span>
+                </button>
+                <button class="icon-btn" onclick="goToFavorites()">
+                    ❤️
+                    <span class="badge" id="favoriteCount">0</span>
+                </button>
+                <button class="icon-btn" onclick="goToCart()">
+                    🛒
+                    <span class="badge" id="cartCount">0</span>
+                </button>
+                <button class="icon-btn" onclick="goToProfile()">
+                    👤
+                </button>
+            </div>
+        </div>
+        
+        <nav class="nav-menu">
+            <ul>
+                <li><a href="catalog.html">Каталог</a></li>
+                <li><a href="sales.html">Акции и скидки</a></li>
+                <li><a href="help.html">Помощь и сервис</a></li>
+                <li><a href="about.html">О компании</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <div class="container">
+        <div class="breadcrumbs" id="breadcrumbs">
+            <a href="index.html">Главная</a>
+            <span>/</span>
+            <a href="catalog.html">Каталог</a>
+            <span>/</span>
+            <span id="productName">Товар</span>
+        </div>
+
+        <div class="product-layout" id="productLayout">
+            <!-- Product content will be loaded here -->
+        </div>
+
+        <div class="tabs">
+            <div class="tab active" onclick="switchTab('description')">Описание</div>
+            <div class="tab" onclick="switchTab('specs')">Характеристики</div>
+            <div class="tab" onclick="switchTab('reviews')">Отзывы</div>
+        </div>
+
+        <div class="tab-content active" id="description-content">
+            <h3>Описание товара</h3>
+            <p id="fullDescription"></p>
+        </div>
+
+        <div class="tab-content" id="specs-content">
+            <h3>Технические характеристики</h3>
+            <div id="fullSpecs"></div>
+        </div>
+
+        <div class="tab-content" id="reviews-content">
+            <h3>Отзывы покупателей</h3>
+            <div id="reviewsList"></div>
+            
+            <div class="review-form">
+                <h3>Оставить отзыв</h3>
+                <form onsubmit="submitReview(event)">
+                    <div class="form-group">
+                        <label>Ваше имя</label>
+                        <input type="text" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Оценка</label>
+                        <div class="rating-input" id="ratingInput">
+                            <span class="rating-star" onclick="setRating(1)">★</span>
+                            <span class="rating-star" onclick="setRating(2)">★</span>
+                            <span class="rating-star" onclick="setRating(3)">★</span>
+                            <span class="rating-star" onclick="setRating(4)">★</span>
+                            <span class="rating-star" onclick="setRating(5)">★</span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Ваш отзыв</label>
+                        <textarea rows="5" required></textarea>
+                    </div>
+                    <button type="submit" class="btn-primary" style="width: auto;">Отправить отзыв</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <div>
+                <h4>О компании</h4>
+                <ul>
+                    <li><a href="about.html">О нас</a></li>
+                    <li><a href="contacts.html">Контакты</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4>Помощь</h4>
+                <ul>
+                    <li><a href="delivery.html">Доставка и оплата</a></li>
+                    <li><a href="guarantee.html">Гарантия и возврат</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            ТехноМарт - Интернет-магазин электроники
+        </div>
+    </footer>
+
+    <div class="notification" id="notification"></div>
+
+    <script src="products-data.js"></script>
+    <script src="common.js"></script>
+    <script>
+        let currentProduct = null;
+        let currentRating = 0;
+
+        function loadProduct() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const productId = parseInt(urlParams.get('id'));
+            
+            currentProduct = getProductById(productId);
+            
+            if (!currentProduct) {
+                window.location.href = 'index.html';
+                return;
+            }
+
+            document.getElementById('pageTitle').textContent = currentProduct.name + ' - ТехноМарт';
+            document.getElementById('productName').textContent = currentProduct.name;
+            
+            const layout = document.getElementById('productLayout');
+            const isFavorite = favorites.includes(currentProduct.id);
+            const isInComparison = comparison.includes(currentProduct.id);
+
+            layout.innerHTML = `
+                <div>
+                    <div class="product-image-large">${currentProduct.image}</div>
+                </div>
+                <div class="product-details">
+                    <h1>${currentProduct.name}</h1>
+                    <div class="product-rating-large">${'⭐'.repeat(currentProduct.rating)}</div>
+                    <div class="stock-status ${currentProduct.inStock ? 'in-stock' : 'out-of-stock'}">
+                        ${currentProduct.inStock ? '✓ В наличии' : '✗ Нет в наличии'}
+                    </div>
+                    <div class="product-price-large">${currentProduct.price} Br</div>
+                    ${currentProduct.oldPrice ? `<div class="product-old-price-large">${currentProduct.oldPrice} Br</div>` : ''}
+                    <p class="product-description">${currentProduct.description}</p>
+                    
+                    <div class="product-specs">
+                        <h3>Основные характеристики</h3>
+                        ${Object.entries(currentProduct.specs).slice(0, 3).map(([key, value]) => `
+                            <div class="spec-row">
+                                <span class="spec-label">${key}</span>
+                                <span class="spec-value">${value}</span>
+                            </div>
+                        `).join('')}
+                    </div>
+
+                    <div class="quantity-selector">
+                        <label style="margin: 0;">Количество:</label>
+                        <button class="quantity-btn" onclick="changeQuantity(-1)">−</button>
+                        <input type="number" class="quantity-input" id="quantity" value="1" min="1" max="10">
+                        <button class="quantity-btn" onclick="changeQuantity(1)">+</button>
+                    </div>
+
+                    <button class="btn-primary" onclick="addToCart(${currentProduct.id})" ${!currentProduct.inStock ? 'disabled' : ''}>
+                        🛒 ${currentProduct.inStock ? 'Добавить в корзину' : 'Недоступно'}
+                    </button>
+                    
+                    <div class="product-actions-large">
+                        <button class="btn-secondary" onclick="toggleFavorite(${currentProduct.id}, event)" style="flex: 1;">
+                            ${isFavorite ? '❤️ В избранном' : '🤍 В избранное'}
+                        </button>
+                        <button class="btn-secondary" onclick="toggleCompare(${currentProduct.id}, event)" style="flex: 1;">
+                            ${isInComparison ? '✓ В сравнении' : '⚖️ Сравнить'}
+                        </button>
+                    </div>
+                </div>
+            `;
+
+            // Load full description
+            document.getElementById('fullDescription').textContent = currentProduct.description;
+
+            // Load full specs
+            const specsDiv = document.getElementById('fullSpecs');
+            specsDiv.innerHTML = Object.entries(currentProduct.specs).map(([key, value]) => `
+                <div class="spec-row">
+                    <span class="spec-label">${key}</span>
+                    <span class="spec-value">${value}</span>
+                </div>
+            `).join('');
+
+            loadReviews();
+        }
+
+        function changeQuantity(delta) {
+            const input = document.getElementById('quantity');
+            let value = parseInt(input.value) + delta;
+            if (value < 1) value = 1;
+            if (value > 10) value = 10;
+            input.value = value;
+        }
+
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            
+            event.target.classList.add('active');
+            document.getElementById(tabName + '-content').classList.add('active');
+        }
+
+        function loadReviews() {
+            const reviews = [
+                { author: 'Алексей М.', date: '15.10.2024', rating: 5, text: 'Отличный товар! Полностью соответствует описанию. Доставка быстрая.' },
+                { author: 'Мария К.', date: '12.10.2024', rating: 5, text: 'Очень довольна покупкой. Качество на высоте, рекомендую!' },
+                { author: 'Дмитрий П.', date: '08.10.2024', rating: 4, text: 'Хороший продукт за свою цену. Есть небольшие замечания, но в целом доволен.' }
+            ];
+
+            const reviewsList = document.getElementById('reviewsList');
+            reviewsList.innerHTML = reviews.map(review => `
+                <div class="review">
+                    <div class="review-header">
+                        <span class="review-author">${review.author}</span>
+                        <span class="review-date">${review.date}</span>
+                    </div>
+                    <div class="review-rating">${'⭐'.repeat(review.rating)}</div>
+                    <p class="review-text">${review.text}</p>
+                </div>
+            `).join('');
+        }
+
+        function setRating(rating) {
+            currentRating = rating;
+            const stars = document.querySelectorAll('.rating-star');
+            stars.forEach((star, index) => {
+                if (index < rating) {
+                    star.classList.add('active');
+                } else {
+                    star.classList.remove('active');
+                }
+            });
+        }
+
+        function submitReview(event) {
+            event.preventDefault();
+            if (currentRating === 0) {
+                alert('Пожалуйста, выберите оценку');
+                return;
+            }
+            showNotification('Спасибо за ваш отзыв!');
+            event.target.reset();
+            setRating(0);
+        }
+
+        function goToSearch() {
+            const query = document.getElementById('searchInput').value;
+            window.location.href = `catalog.html?search=${encodeURIComponent(query)}`;
+        }
+
+        loadProduct();
+    </script>
+</body>
+</html>
+

@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Заказ оформлен - ТехноМарт</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .success-container {
+            max-width: 800px;
+            margin: 60px auto;
+            text-align: center;
+            background: white;
+            padding: 60px 40px;
+            border-radius: 12px;
+        }
+
+        .success-icon {
+            font-size: 100px;
+            margin-bottom: 30px;
+            animation: scaleIn 0.5s ease;
+        }
+
+        @keyframes scaleIn {
+            from {
+                transform: scale(0);
+                opacity: 0;
+            }
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .success-container h1 {
+            font-size: 36px;
+            color: #10B981;
+            margin-bottom: 16px;
+        }
+
+        .success-container p {
+            font-size: 18px;
+            color: #6B7280;
+            margin-bottom: 30px;
+        }
+
+        .order-details {
+            background: #F9FAFB;
+            border-radius: 8px;
+            padding: 30px;
+            margin: 30px 0;
+            text-align: left;
+        }
+
+        .order-detail-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid #E5E7EB;
+        }
+
+        .order-detail-row:last-child {
+            border-bottom: none;
+        }
+
+        .order-detail-label {
+            color: #6B7280;
+            font-weight: 500;
+        }
+
+        .order-detail-value {
+            color: #1F2937;
+            font-weight: 600;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+            margin-top: 30px;
+        }
+
+        .tracking-info {
+            background: #EFF6FF;
+            border: 2px solid #2E5BFF;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 30px 0;
+        }
+
+        .tracking-info h3 {
+            color: #1E3A8A;
+            margin-bottom: 12px;
+        }
+
+        .tracking-info p {
+            color: #1F2937;
+            margin: 0;
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="header-top">
+            <div class="header-container">
+                <span>📞 +375 29 123-45-67</span>
+                <span>🚚 Бесплатная доставка от 200 Br</span>
+            </div>
+        </div>
+        
+        <div class="header-container" style="padding: 15px 20px;">
+            <a href="index.html" class="logo">ТехноМарт</a>
+            
+            <div class="search-bar">
+                <input type="text" id="searchInput" placeholder="Поиск товаров...">
+                <button class="search-btn" onclick="goToSearch()">🔍</button>
+            </div>
+            
+            <div class="header-icons">
+                <button class="icon-btn" onclick="goToComparison()">
+                    ⚖️
+                    <span class="badge" id="compareCount">0</span>
+                </button>
+                <button class="icon-btn" onclick="goToFavorites()">
+                    ❤️
+                    <span class="badge" id="favoriteCount">0</span>
+                </button>
+                <button class="icon-btn" onclick="goToCart()">
+                    🛒
+                    <span class="badge" id="cartCount">0</span>
+                </button>
+                <button class="icon-btn" onclick="goToProfile()">
+                    👤
+                </button>
+            </div>
+        </div>
+        
+        <nav class="nav-menu">
+            <ul>
+                <li><a href="catalog.html">Каталог</a></li>
+                <li><a href="sales.html">Акции и скидки</a></li>
+                <li><a href="help.html">Помощь и сервис</a></li>
+                <li><a href="about.html">О компании</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <div class="container">
+        <div class="success-container">
+            <div class="success-icon">✓</div>
+            <h1>Заказ успешно оформлен!</h1>
+            <p>Спасибо за покупку в ТехноМарт</p>
+
+            <div class="order-details" id="orderDetails">
+                <!-- Order details will be loaded here -->
+            </div>
+
+            <div class="tracking-info">
+                <h3>📧 Что дальше?</h3>
+                <p>Мы отправили подтверждение заказа на вашу электронную почту. Наш менеджер свяжется с вами в течение 1 часа для уточнения деталей доставки.</p>
+            </div>
+
+            <div class="action-buttons">
+                <a href="index.html" class="btn-secondary">← На главную</a>
+                <a href="catalog.html" class="btn-primary" style="display: inline-block; width: auto;">Продолжить покупки</a>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <div>
+                <h4>О компании</h4>
+                <ul>
+                    <li><a href="about.html">О нас</a></li>
+                    <li><a href="contacts.html">Контакты</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4>Помощь</h4>
+                <ul>
+                    <li><a href="delivery.html">Доставка и оплата</a></li>
+                    <li><a href="guarantee.html">Гарантия и возврат</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            ТехноМарт - Интернет-магазин электроники
+        </div>
+    </footer>
+
+    <script src="products-data.js"></script>
+    <script src="common.js"></script>
+    <script>
+        function loadOrderDetails() {
+            const orderData = JSON.parse(localStorage.getItem('currentOrder'));
+            
+            if (!orderData) {
+                window.location.href = 'index.html';
+                return;
+            }
+
+            const orderNumber = 'TM' + Date.now().toString().slice(-8);
+            const orderDate = new Date(orderData.date).toLocaleString('ru-RU', {
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+
+            const deliveryNames = {
+                'courier': 'Курьерская доставка',
+                'pickup': 'Самовывоз',
+                'express': 'Экспресс-доставка'
+            };
+
+            const paymentNames = {
+                'card_online': 'Банковская карта онлайн',
+                'card_courier': 'Картой при получении',
+                'cash': 'Наличными при получении'
+            };
+
+            document.getElementById('orderDetails').innerHTML = `
+                <div class="order-detail-row">
+                    <span class="order-detail-label">Номер заказа</span>
+                    <span class="order-detail-value">${orderNumber}</span>
+                </div>
+                <div class="order-detail-row">
+                    <span class="order-detail-label">Дата оформления</span>
+                    <span class="order-detail-value">${orderDate}</span>
+                </div>
+                <div class="order-detail-row">
+                    <span class="order-detail-label">Товаров</span>
+                    <span class="order-detail-value">${orderData.products.length} шт.</span>
+                </div>
+                <div class="order-detail-row">
+                    <span class="order-detail-label">Способ доставки</span>
+                    <span class="order-detail-value">${deliveryNames[orderData.delivery]}</span>
+                </div>
+                ${orderData.contact.address ? `
+                    <div class="order-detail-row">
+                        <span class="order-detail-label">Адрес доставки</span>
+                        <span class="order-detail-value">${orderData.contact.city}, ${orderData.contact.address}</span>
+                    </div>
+                ` : ''}
+                <div class="order-detail-row">
+                    <span class="order-detail-label">Способ оплаты</span>
+                    <span class="order-detail-value">${paymentNames[orderData.payment]}</span>
+                </div>
+                <div class="order-detail-row">
+                    <span class="order-detail-label">Контактный телефон</span>
+                    <span class="order-detail-value">${orderData.contact.phone}</span>
+                </div>
+                <div class="order-detail-row">
+                    <span class="order-detail-label">Email</span>
+                    <span class="order-detail-value">${orderData.contact.email}</span>
+                </div>
+                <div class="order-detail-row" style="font-size: 20px; margin-top: 12px;">
+                    <span class="order-detail-label">Итого к оплате</span>
+                    <span class="order-detail-value" style="color: #10B981; font-size: 24px;">${orderData.total.toFixed(2)} Br</span>
+                </div>
+            `;
+
+            // Clear order from localStorage after display
+            // localStorage.removeItem('currentOrder');
+        }
+
+        function goToSearch() {
+            const query = document.getElementById('searchInput').value;
+            window.location.href = `catalog.html?search=${encodeURIComponent(query)}`;
+        }
+
+        loadOrderDetails();
+    </script>
+</body>
+</html>
+

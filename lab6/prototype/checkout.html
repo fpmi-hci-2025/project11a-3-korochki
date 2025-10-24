@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Оформление заказа - ТехноМарт</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .checkout-layout {
+            display: grid;
+            grid-template-columns: 1fr 400px;
+            gap: 30px;
+        }
+
+        .checkout-form {
+            background: white;
+            border-radius: 12px;
+            padding: 40px;
+        }
+
+        .checkout-section {
+            margin-bottom: 40px;
+        }
+
+        .checkout-section h2 {
+            font-size: 24px;
+            margin-bottom: 20px;
+            color: #1F2937;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+
+        .form-group-full {
+            margin-bottom: 16px;
+        }
+
+        .delivery-options, .payment-options {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .radio-option {
+            border: 2px solid #E5E7EB;
+            border-radius: 8px;
+            padding: 16px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+        }
+
+        .radio-option:hover {
+            border-color: #2E5BFF;
+        }
+
+        .radio-option input[type="radio"] {
+            margin-right: 12px;
+            width: 20px;
+            height: 20px;
+        }
+
+        .radio-option input[type="radio"]:checked {
+            accent-color: #2E5BFF;
+        }
+
+        .radio-option.selected {
+            border-color: #2E5BFF;
+            background: #EFF6FF;
+        }
+
+        .option-content {
+            flex: 1;
+        }
+
+        .option-title {
+            font-weight: 600;
+            color: #1F2937;
+            margin-bottom: 4px;
+        }
+
+        .option-description {
+            font-size: 14px;
+            color: #6B7280;
+        }
+
+        .option-price {
+            font-weight: 700;
+            color: #10B981;
+        }
+
+        .checkout-summary {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            height: fit-content;
+            position: sticky;
+            top: 120px;
+        }
+
+        .order-item {
+            display: flex;
+            gap: 12px;
+            padding: 12px 0;
+            border-bottom: 1px solid #E5E7EB;
+        }
+
+        .order-item:last-child {
+            border-bottom: none;
+        }
+
+        .order-item-image {
+            width: 60px;
+            height: 60px;
+            background: #F3F4F6;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            flex-shrink: 0;
+        }
+
+        .order-item-info {
+            flex: 1;
+        }
+
+        .order-item-name {
+            font-size: 14px;
+            color: #1F2937;
+            margin-bottom: 4px;
+        }
+
+        .order-item-quantity {
+            font-size: 12px;
+            color: #6B7280;
+        }
+
+        .order-item-price {
+            font-weight: 600;
+            color: #1F2937;
+        }
+
+        .checkout-steps {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 40px;
+            position: relative;
+        }
+
+        .checkout-steps::before {
+            content: '';
+            position: absolute;
+            top: 20px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: #E5E7EB;
+            z-index: 0;
+        }
+
+        .step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background: white;
+            position: relative;
+            z-index: 1;
+        }
+
+        .step-number {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #E5E7EB;
+            color: #6B7280;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .step.active .step-number {
+            background: #2E5BFF;
+            color: white;
+        }
+
+        .step.completed .step-number {
+            background: #10B981;
+            color: white;
+        }
+
+        .step-label {
+            font-size: 14px;
+            color: #6B7280;
+        }
+
+        .step.active .step-label {
+            color: #2E5BFF;
+            font-weight: 600;
+        }
+
+        .agreement {
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+            margin-top: 20px;
+            font-size: 14px;
+            color: #6B7280;
+        }
+
+        .agreement input[type="checkbox"] {
+            margin-top: 4px;
+        }
+
+        .agreement a {
+            color: #2E5BFF;
+        }
+
+        @media (max-width: 768px) {
+            .checkout-layout {
+                grid-template-columns: 1fr;
+            }
+
+            .checkout-form {
+                padding: 20px;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .checkout-steps {
+                flex-wrap: wrap;
+                gap: 20px;
+            }
+
+            .step {
+                flex-direction: row;
+                gap: 8px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="header-top">
+            <div class="header-container">
+                <span>📞 +375 29 123-45-67</span>
+                <span>🚚 Бесплатная доставка от 200 Br</span>
+            </div>
+        </div>
+        
+        <div class="header-container" style="padding: 15px 20px;">
+            <a href="index.html" class="logo">ТехноМарт</a>
+            
+            <div class="search-bar">
+                <input type="text" id="searchInput" placeholder="Поиск товаров...">
+                <button class="search-btn" onclick="goToSearch()">🔍</button>
+            </div>
+            
+            <div class="header-icons">
+                <button class="icon-btn" onclick="goToComparison()">
+                    ⚖️
+                    <span class="badge" id="compareCount">0</span>
+                </button>
+                <button class="icon-btn" onclick="goToFavorites()">
+                    ❤️
+                    <span class="badge" id="favoriteCount">0</span>
+                </button>
+                <button class="icon-btn" onclick="goToCart()">
+                    🛒
+                    <span class="badge" id="cartCount">0</span>
+                </button>
+                <button class="icon-btn" onclick="goToProfile()">
+                    👤
+                </button>
+            </div>
+        </div>
+        
+        <nav class="nav-menu">
+            <ul>
+                <li><a href="catalog.html">Каталог</a></li>
+                <li><a href="sales.html">Акции и скидки</a></li>
+                <li><a href="help.html">Помощь и сервис</a></li>
+                <li><a href="about.html">О компании</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <div class="container">
+        <div class="breadcrumbs">
+            <a href="index.html">Главная</a>
+            <span>/</span>
+            <a href="cart.html">Корзина</a>
+            <span>/</span>
+            <span>Оформление заказа</span>
+        </div>
+
+        <h1>Оформление заказа</h1>
+
+        <div class="checkout-steps">
+            <div class="step completed">
+                <div class="step-number">✓</div>
+                <div class="step-label">Корзина</div>
+            </div>
+            <div class="step active">
+                <div class="step-number">2</div>
+                <div class="step-label">Оформление</div>
+            </div>
+            <div class="step">
+                <div class="step-number">3</div>
+                <div class="step-label">Оплата</div>
+            </div>
+            <div class="step">
+                <div class="step-number">4</div>
+                <div class="step-label">Готово</div>
+            </div>
+        </div>
+
+        <div class="checkout-layout">
+            <form class="checkout-form" id="checkoutForm" onsubmit="submitOrder(event)">
+                <!-- Personal Info -->
+                <div class="checkout-section">
+                    <h2>1. Контактные данные</h2>
+                    <div class="form-row">
+                        <div class="form-group-full">
+                            <label>Имя *</label>
+                            <input type="text" name="firstName" required>
+                        </div>
+                        <div class="form-group-full">
+                            <label>Фамилия *</label>
+                            <input type="text" name="lastName" required>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group-full">
+                            <label>Телефон *</label>
+                            <input type="tel" name="phone" placeholder="+375 29 123-45-67" required>
+                        </div>
+                        <div class="form-group-full">
+                            <label>Email *</label>
+                            <input type="email" name="email" placeholder="example@mail.com" required>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Delivery -->
+                <div class="checkout-section">
+                    <h2>2. Способ доставки</h2>
+                    <div class="delivery-options">
+                        <label class="radio-option selected">
+                            <input type="radio" name="delivery" value="courier" checked onchange="updateDelivery()">
+                            <div class="option-content">
+                                <div class="option-title">Курьерская доставка</div>
+                                <div class="option-description">Доставка по адресу, 1-2 дня</div>
+                            </div>
+                            <div class="option-price">15 Br</div>
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="delivery" value="pickup" onchange="updateDelivery()">
+                            <div class="option-content">
+                                <div class="option-title">Самовывоз из магазина</div>
+                                <div class="option-description">Бесплатно, готов сегодня</div>
+                            </div>
+                            <div class="option-price">Бесплатно</div>
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="delivery" value="express" onchange="updateDelivery()">
+                            <div class="option-content">
+                                <div class="option-title">Экспресс-доставка</div>
+                                <div class="option-description">Доставка в день заказа</div>
+                            </div>
+                            <div class="option-price">30 Br</div>
+                        </label>
+                    </div>
+                    
+                    <div id="addressFields" style="margin-top: 20px;">
+                        <div class="form-group-full">
+                            <label>Город *</label>
+                            <input type="text" name="city" value="Минск" required>
+                        </div>
+                        <div class="form-group-full">
+                            <label>Адрес доставки *</label>
+                            <input type="text" name="address" placeholder="Улица, дом, квартира" required>
+                        </div>
+                        <div class="form-group-full">
+                            <label>Комментарий к заказу</label>
+                            <textarea name="comment" rows="3" placeholder="Например, домофон не работает"></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Payment -->
+                <div class="checkout-section">
+                    <h2>3. Способ оплаты</h2>
+                    <div class="payment-options">
+                        <label class="radio-option selected">
+                            <input type="radio" name="payment" value="card_online" checked>
+                            <div class="option-content">
+                                <div class="option-title">Банковская карта онлайн</div>
+                                <div class="option-description">Visa, Mastercard, Белкарт</div>
+                            </div>
+                            <span>💳</span>
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="payment" value="card_courier">
+                            <div class="option-content">
+                                <div class="option-title">Картой при получении</div>
+                                <div class="option-description">Оплата курьеру</div>
+                            </div>
+                            <span>💳</span>
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="payment" value="cash">
+                            <div class="option-content">
+                                <div class="option-title">Наличными при получении</div>
+                                <div class="option-description">Оплата курьеру</div>
+                            </div>
+                            <span>💵</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="agreement">
+                    <input type="checkbox" id="agreement" required>
+                    <label for="agreement">
+                        Я согласен с <a href="#">условиями обработки персональных данных</a> 
+                        и <a href="#">правилами пользования сайтом</a>
+                    </label>
+                </div>
+
+                <button type="submit" class="btn-primary" style="margin-top: 20px;">
+                    Подтвердить заказ
+                </button>
+            </form>
+
+            <!-- Order Summary -->
+            <div class="checkout-summary">
+                <h2>Ваш заказ</h2>
+                <div id="orderItems" style="margin-bottom: 20px;"></div>
+                <div id="orderSummary"></div>
+                <button type="button" class="btn-secondary" onclick="goToCart()" style="width: 100%; margin-top: 16px;">
+                    ← Вернуться в корзину
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <div>
+                <h4>О компании</h4>
+                <ul>
+                    <li><a href="about.html">О нас</a></li>
+                    <li><a href="contacts.html">Контакты</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4>Помощь</h4>
+                <ul>
+                    <li><a href="delivery.html">Доставка и оплата</a></li>
+                    <li><a href="guarantee.html">Гарантия и возврат</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            ТехноМарт - Интернет-магазин электроники
+        </div>
+    </footer>
+
+    <div class="notification" id="notification"></div>
+
+    <script src="products-data.js"></script>
+    <script src="common.js"></script>
+    <script>
+        let deliveryCost = 15;
+        let cartQuantities = JSON.parse(localStorage.getItem('cartQuantities')) || {};
+
+        function loadCheckout() {
+            if (cart.length === 0) {
+                window.location.href = 'cart.html';
+                return;
+            }
+
+            const cartProducts = getProductsByIds(cart);
+            
+            // Render order items
+            const itemsContainer = document.getElementById('orderItems');
+            itemsContainer.innerHTML = cartProducts.map(product => {
+                const quantity = cartQuantities[product.id] || 1;
+                return `
+                    <div class="order-item">
+                        <div class="order-item-image">${product.image}</div>
+                        <div class="order-item-info">
+                            <div class="order-item-name">${product.name}</div>
+                            <div class="order-item-quantity">${quantity} шт. × ${product.price} Br</div>
+                        </div>
+                        <div class="order-item-price">${(product.price * quantity).toFixed(2)} Br</div>
+                    </div>
+                `;
+            }).join('');
+
+            updateSummary(cartProducts);
+        }
+
+        function updateSummary(products) {
+            const subtotal = products.reduce((sum, p) => {
+                const quantity = cartQuantities[p.id] || 1;
+                return sum + (p.price * quantity);
+            }, 0);
+
+            const total = subtotal + deliveryCost;
+
+            document.getElementById('orderSummary').innerHTML = `
+                <div class="summary-row">
+                    <span>Товары</span>
+                    <span>${subtotal.toFixed(2)} Br</span>
+                </div>
+                <div class="summary-row">
+                    <span>Доставка</span>
+                    <span>${deliveryCost === 0 ? 'Бесплатно' : deliveryCost + ' Br'}</span>
+                </div>
+                <div class="summary-row total">
+                    <span>Итого</span>
+                    <span>${total.toFixed(2)} Br</span>
+                </div>
+            `;
+        }
+
+        function updateDelivery() {
+            const delivery = document.querySelector('input[name="delivery"]:checked').value;
+            const addressFields = document.getElementById('addressFields');
+            
+            // Update selected style
+            document.querySelectorAll('.radio-option').forEach(option => {
+                const radio = option.querySelector('input[type="radio"]');
+                if (radio.checked) {
+                    option.classList.add('selected');
+                } else {
+                    option.classList.remove('selected');
+                }
+            });
+
+            // Update delivery cost
+            if (delivery === 'courier') {
+                deliveryCost = 15;
+                addressFields.style.display = 'block';
+            } else if (delivery === 'pickup') {
+                deliveryCost = 0;
+                addressFields.style.display = 'none';
+            } else if (delivery === 'express') {
+                deliveryCost = 30;
+                addressFields.style.display = 'block';
+            }
+
+            const cartProducts = getProductsByIds(cart);
+            updateSummary(cartProducts);
+        }
+
+        // Add event listeners for payment radio buttons
+        document.addEventListener('DOMContentLoaded', () => {
+            document.querySelectorAll('input[name="payment"]').forEach(radio => {
+                radio.addEventListener('change', () => {
+                    document.querySelectorAll('.payment-options .radio-option').forEach(option => {
+                        const radio = option.querySelector('input[type="radio"]');
+                        if (radio.checked) {
+                            option.classList.add('selected');
+                        } else {
+                            option.classList.remove('selected');
+                        }
+                    });
+                });
+            });
+        });
+
+        function submitOrder(event) {
+            event.preventDefault();
+            
+            // Save order data
+            const formData = new FormData(event.target);
+            const orderData = {
+                date: new Date().toISOString(),
+                products: cart,
+                quantities: cartQuantities,
+                delivery: formData.get('delivery'),
+                payment: formData.get('payment'),
+                contact: {
+                    firstName: formData.get('firstName'),
+                    lastName: formData.get('lastName'),
+                    phone: formData.get('phone'),
+                    email: formData.get('email'),
+                    city: formData.get('city'),
+                    address: formData.get('address'),
+                    comment: formData.get('comment')
+                },
+                deliveryCost: deliveryCost,
+                total: getTotal()
+            };
+
+            localStorage.setItem('currentOrder', JSON.stringify(orderData));
+            
+            // Clear cart
+            cart = [];
+            cartQuantities = {};
+            localStorage.setItem('cart', JSON.stringify(cart));
+            localStorage.setItem('cartQuantities', JSON.stringify(cartQuantities));
+            updateBadges();
+
+            // Redirect to success page
+            window.location.href = 'order-success.html';
+        }
+
+        function getTotal() {
+            const cartProducts = getProductsByIds(cart);
+            const subtotal = cartProducts.reduce((sum, p) => {
+                const quantity = cartQuantities[p.id] || 1;
+                return sum + (p.price * quantity);
+            }, 0);
+            return subtotal + deliveryCost;
+        }
+
+        function goToSearch() {
+            const query = document.getElementById('searchInput').value;
+            window.location.href = `catalog.html?search=${encodeURIComponent(query)}`;
+        }
+
+        loadCheckout();
+    </script>
+</body>
+</html>
+
