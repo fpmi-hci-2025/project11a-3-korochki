@@ -1,0 +1,774 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UX/UI Дизайн мобильного приложения - ТехноМарт</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 40px 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            text-align: center;
+            color: white;
+            font-size: 42px;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .subtitle {
+            text-align: center;
+            color: rgba(255,255,255,0.9);
+            font-size: 18px;
+            margin-bottom: 50px;
+        }
+
+        .screens-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 40px;
+            margin-bottom: 60px;
+        }
+
+        .screen-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .screen-title {
+            color: white;
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .phone-frame {
+            width: 360px;
+            height: 720px;
+            background: #1a1a1a;
+            border-radius: 40px;
+            padding: 12px;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.4);
+            position: relative;
+        }
+
+        .phone-frame::before {
+            content: '';
+            position: absolute;
+            top: 25px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 120px;
+            height: 25px;
+            background: #1a1a1a;
+            border-radius: 0 0 15px 15px;
+            z-index: 10;
+        }
+
+        .phone-screen {
+            width: 100%;
+            height: 100%;
+            background: white;
+            border-radius: 30px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Status Bar */
+        .status-bar {
+            height: 44px;
+            background: linear-gradient(135deg, #2E5BFF 0%, #1E3A8A 100%);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+            color: white;
+            font-size: 14px;
+        }
+
+        /* Screen Content */
+        .screen-content {
+            height: calc(100% - 44px);
+            overflow-y: auto;
+            background: #F8FAFC;
+        }
+
+        /* Home Screen */
+        .hero-mobile {
+            background: linear-gradient(135deg, #2E5BFF 0%, #1E3A8A 100%);
+            padding: 30px 20px;
+            color: white;
+            text-align: center;
+        }
+
+        .hero-mobile h2 {
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        .hero-mobile p {
+            font-size: 16px;
+            opacity: 0.9;
+        }
+
+        .search-mobile {
+            padding: 16px 20px;
+            background: white;
+        }
+
+        .search-input-mobile {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #E5E7EB;
+            border-radius: 12px;
+            font-size: 16px;
+        }
+
+        .categories-mobile {
+            padding: 20px;
+            background: white;
+            margin: 12px 0;
+        }
+
+        .categories-mobile h3 {
+            font-size: 20px;
+            margin-bottom: 16px;
+            color: #1F2937;
+        }
+
+        .category-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+
+        .category-card-mobile {
+            background: #F3F4F6;
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            cursor: pointer;
+        }
+
+        .category-icon-mobile {
+            font-size: 36px;
+            margin-bottom: 8px;
+        }
+
+        .category-name {
+            font-size: 14px;
+            font-weight: 600;
+            color: #1F2937;
+        }
+
+        /* Catalog Screen */
+        .header-mobile {
+            background: white;
+            padding: 16px 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .back-btn {
+            font-size: 24px;
+            cursor: pointer;
+        }
+
+        .header-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #1F2937;
+            flex: 1;
+        }
+
+        .filter-btn {
+            background: #2E5BFF;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 14px;
+            border: none;
+            cursor: pointer;
+        }
+
+        .product-list {
+            padding: 16px;
+        }
+
+        .product-card-mobile {
+            background: white;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 12px;
+            display: flex;
+            gap: 16px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        .product-image-mobile {
+            width: 80px;
+            height: 80px;
+            background: #F3F4F6;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+            flex-shrink: 0;
+        }
+
+        .product-info-mobile {
+            flex: 1;
+        }
+
+        .product-name-mobile {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1F2937;
+            margin-bottom: 4px;
+        }
+
+        .product-rating-mobile {
+            color: #F59E0B;
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+
+        .product-price-mobile {
+            font-size: 20px;
+            font-weight: 700;
+            color: #10B981;
+        }
+
+        /* Product Detail Screen */
+        .product-detail {
+            background: white;
+        }
+
+        .product-image-large {
+            width: 100%;
+            height: 300px;
+            background: #F3F4F6;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 120px;
+        }
+
+        .product-detail-info {
+            padding: 20px;
+        }
+
+        .product-detail-title {
+            font-size: 22px;
+            font-weight: 700;
+            color: #1F2937;
+            margin-bottom: 8px;
+        }
+
+        .product-detail-rating {
+            color: #F59E0B;
+            font-size: 18px;
+            margin-bottom: 16px;
+        }
+
+        .product-detail-price {
+            font-size: 32px;
+            font-weight: 700;
+            color: #10B981;
+            margin-bottom: 20px;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .btn-mobile {
+            flex: 1;
+            padding: 14px;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn-primary-mobile {
+            background: #10B981;
+            color: white;
+        }
+
+        .btn-secondary-mobile {
+            background: #F3F4F6;
+            color: #1F2937;
+        }
+
+        .specs-mobile {
+            background: #F9FAFB;
+            padding: 16px;
+            border-radius: 8px;
+        }
+
+        .specs-mobile h4 {
+            margin-bottom: 12px;
+            color: #1F2937;
+        }
+
+        .spec-row-mobile {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #E5E7EB;
+            font-size: 14px;
+        }
+
+        .spec-row-mobile:last-child {
+            border-bottom: none;
+        }
+
+        /* Cart Screen */
+        .cart-item {
+            background: white;
+            padding: 16px;
+            margin-bottom: 12px;
+            border-radius: 12px;
+            display: flex;
+            gap: 16px;
+        }
+
+        .cart-item-image {
+            width: 60px;
+            height: 60px;
+            background: #F3F4F6;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+        }
+
+        .cart-item-info {
+            flex: 1;
+        }
+
+        .cart-item-name {
+            font-size: 14px;
+            font-weight: 600;
+            color: #1F2937;
+            margin-bottom: 4px;
+        }
+
+        .cart-item-price {
+            font-size: 18px;
+            font-weight: 700;
+            color: #10B981;
+        }
+
+        .quantity-control {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 8px;
+        }
+
+        .qty-btn {
+            width: 28px;
+            height: 28px;
+            background: #F3F4F6;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .qty-value {
+            font-size: 16px;
+            font-weight: 600;
+            min-width: 30px;
+            text-align: center;
+        }
+
+        .cart-summary {
+            background: white;
+            padding: 20px;
+            border-radius: 12px 12px 0 0;
+            position: sticky;
+            bottom: 0;
+        }
+
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 12px;
+            font-size: 16px;
+        }
+
+        .summary-row.total {
+            font-size: 20px;
+            font-weight: 700;
+            padding-top: 12px;
+            border-top: 2px solid #E5E7EB;
+        }
+
+        /* Bottom Navigation */
+        .bottom-nav {
+            position: sticky;
+            bottom: 0;
+            background: white;
+            border-top: 1px solid #E5E7EB;
+            display: flex;
+            justify-content: space-around;
+            padding: 12px 0;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            font-size: 24px;
+            color: #9CA3AF;
+            cursor: pointer;
+        }
+
+        .nav-item.active {
+            color: #2E5BFF;
+        }
+
+        .nav-label {
+            font-size: 12px;
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .screen-wrapper {
+            animation: fadeIn 0.6s ease;
+        }
+
+        .screen-wrapper:nth-child(1) { animation-delay: 0.1s; }
+        .screen-wrapper:nth-child(2) { animation-delay: 0.2s; }
+        .screen-wrapper:nth-child(3) { animation-delay: 0.3s; }
+        .screen-wrapper:nth-child(4) { animation-delay: 0.4s; }
+        .screen-wrapper:nth-child(5) { animation-delay: 0.5s; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎨 UX/UI Дизайн мобильного приложения</h1>
+        <p class="subtitle">ТехноМарт - Интернет-магазин электроники</p>
+
+        <div class="screens-grid">
+            <!-- Screen 1: Home -->
+            <div class="screen-wrapper">
+                <div class="screen-title">1. Главный экран</div>
+                <div class="phone-frame">
+                    <div class="phone-screen">
+                        <div class="status-bar">
+                            <span>9:41</span>
+                            <span>📶 🔋</span>
+                        </div>
+                        <div class="screen-content">
+                            <div class="hero-mobile">
+                                <h2>ТехноМарт</h2>
+                                <p>Скидки до 50% на электронику!</p>
+                            </div>
+                            <div class="search-mobile">
+                                <input type="text" class="search-input-mobile" placeholder="🔍 Поиск товаров...">
+                            </div>
+                            <div class="categories-mobile">
+                                <h3>Категории</h3>
+                                <div class="category-grid">
+                                    <div class="category-card-mobile">
+                                        <div class="category-icon-mobile">📱</div>
+                                        <div class="category-name">Смартфоны</div>
+                                    </div>
+                                    <div class="category-card-mobile">
+                                        <div class="category-icon-mobile">💻</div>
+                                        <div class="category-name">Ноутбуки</div>
+                                    </div>
+                                    <div class="category-card-mobile">
+                                        <div class="category-icon-mobile">🎧</div>
+                                        <div class="category-name">Наушники</div>
+                                    </div>
+                                    <div class="category-card-mobile">
+                                        <div class="category-icon-mobile">🎮</div>
+                                        <div class="category-name">Комплектующие</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="bottom-nav">
+                                <div class="nav-item active">
+                                    <span>🏠</span>
+                                    <span class="nav-label">Главная</span>
+                                </div>
+                                <div class="nav-item">
+                                    <span>🔍</span>
+                                    <span class="nav-label">Каталог</span>
+                                </div>
+                                <div class="nav-item">
+                                    <span>🛒</span>
+                                    <span class="nav-label">Корзина</span>
+                                </div>
+                                <div class="nav-item">
+                                    <span>👤</span>
+                                    <span class="nav-label">Профиль</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Screen 2: Catalog -->
+            <div class="screen-wrapper">
+                <div class="screen-title">2. Каталог</div>
+                <div class="phone-frame">
+                    <div class="phone-screen">
+                        <div class="status-bar">
+                            <span>9:41</span>
+                            <span>📶 🔋</span>
+                        </div>
+                        <div class="screen-content">
+                            <div class="header-mobile">
+                                <span class="back-btn">←</span>
+                                <div class="header-title">Смартфоны</div>
+                                <button class="filter-btn">⚙️ Фильтры</button>
+                            </div>
+                            <div class="product-list">
+                                <div class="product-card-mobile">
+                                    <div class="product-image-mobile">📱</div>
+                                    <div class="product-info-mobile">
+                                        <div class="product-name-mobile">iPhone 15 Pro</div>
+                                        <div class="product-rating-mobile">⭐⭐⭐⭐⭐</div>
+                                        <div class="product-price-mobile">2 999 Br</div>
+                                    </div>
+                                </div>
+                                <div class="product-card-mobile">
+                                    <div class="product-image-mobile">📱</div>
+                                    <div class="product-info-mobile">
+                                        <div class="product-name-mobile">Samsung S23</div>
+                                        <div class="product-rating-mobile">⭐⭐⭐⭐</div>
+                                        <div class="product-price-mobile">2 499 Br</div>
+                                    </div>
+                                </div>
+                                <div class="product-card-mobile">
+                                    <div class="product-image-mobile">📱</div>
+                                    <div class="product-info-mobile">
+                                        <div class="product-name-mobile">Xiaomi 13 Pro</div>
+                                        <div class="product-rating-mobile">⭐⭐⭐⭐</div>
+                                        <div class="product-price-mobile">2 199 Br</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="bottom-nav">
+                                <div class="nav-item">
+                                    <span>🏠</span>
+                                    <span class="nav-label">Главная</span>
+                                </div>
+                                <div class="nav-item active">
+                                    <span>🔍</span>
+                                    <span class="nav-label">Каталог</span>
+                                </div>
+                                <div class="nav-item">
+                                    <span>🛒</span>
+                                    <span class="nav-label">Корзина</span>
+                                </div>
+                                <div class="nav-item">
+                                    <span>👤</span>
+                                    <span class="nav-label">Профиль</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Screen 3: Product Detail -->
+            <div class="screen-wrapper">
+                <div class="screen-title">3. Карточка товара</div>
+                <div class="phone-frame">
+                    <div class="phone-screen">
+                        <div class="status-bar">
+                            <span>9:41</span>
+                            <span>📶 🔋</span>
+                        </div>
+                        <div class="screen-content">
+                            <div class="header-mobile">
+                                <span class="back-btn">←</span>
+                                <div class="header-title">Детали товара</div>
+                                <span>❤️</span>
+                            </div>
+                            <div class="product-detail">
+                                <div class="product-image-large">📱</div>
+                                <div class="product-detail-info">
+                                    <div class="product-detail-title">Apple iPhone 15 Pro</div>
+                                    <div class="product-detail-rating">⭐⭐⭐⭐⭐ (4.9)</div>
+                                    <div class="product-detail-price">2 999 Br</div>
+                                    <div class="action-buttons">
+                                        <button class="btn-mobile btn-primary-mobile">🛒 В корзину</button>
+                                        <button class="btn-mobile btn-secondary-mobile">⚖️</button>
+                                    </div>
+                                    <div class="specs-mobile">
+                                        <h4>Характеристики</h4>
+                                        <div class="spec-row-mobile">
+                                            <span>Процессор</span>
+                                            <span>A17 Pro</span>
+                                        </div>
+                                        <div class="spec-row-mobile">
+                                            <span>Память</span>
+                                            <span>256 GB</span>
+                                        </div>
+                                        <div class="spec-row-mobile">
+                                            <span>Камера</span>
+                                            <span>48 Мп</span>
+                                        </div>
+                                        <div class="spec-row-mobile">
+                                            <span>Экран</span>
+                                            <span>6.1" OLED</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Screen 4: Cart -->
+            <div class="screen-wrapper">
+                <div class="screen-title">4. Корзина</div>
+                <div class="phone-frame">
+                    <div class="phone-screen">
+                        <div class="status-bar">
+                            <span>9:41</span>
+                            <span>📶 🔋</span>
+                        </div>
+                        <div class="screen-content">
+                            <div class="header-mobile">
+                                <span class="back-btn">←</span>
+                                <div class="header-title">Корзина (2)</div>
+                                <span></span>
+                            </div>
+                            <div class="product-list">
+                                <div class="cart-item">
+                                    <div class="cart-item-image">📱</div>
+                                    <div class="cart-item-info">
+                                        <div class="cart-item-name">iPhone 15 Pro</div>
+                                        <div class="cart-item-price">2 999 Br</div>
+                                        <div class="quantity-control">
+                                            <button class="qty-btn">−</button>
+                                            <span class="qty-value">1</span>
+                                            <button class="qty-btn">+</button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="cart-item">
+                                    <div class="cart-item-image">🎧</div>
+                                    <div class="cart-item-info">
+                                        <div class="cart-item-name">AirPods Pro 2</div>
+                                        <div class="cart-item-price">749 Br</div>
+                                        <div class="quantity-control">
+                                            <button class="qty-btn">−</button>
+                                            <span class="qty-value">1</span>
+                                            <button class="qty-btn">+</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="cart-summary">
+                                <div class="summary-row">
+                                    <span>Товары</span>
+                                    <span>3 748 Br</span>
+                                </div>
+                                <div class="summary-row">
+                                    <span>Доставка</span>
+                                    <span>Бесплатно</span>
+                                </div>
+                                <div class="summary-row total">
+                                    <span>Итого</span>
+                                    <span>3 748 Br</span>
+                                </div>
+                                <button class="btn-mobile btn-primary-mobile" style="width: 100%; margin-top: 16px;">Оформить заказ</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Screen 5: Checkout -->
+            <div class="screen-wrapper">
+                <div class="screen-title">5. Оформление заказа</div>
+                <div class="phone-frame">
+                    <div class="phone-screen">
+                        <div class="status-bar">
+                            <span>9:41</span>
+                            <span>📶 🔋</span>
+                        </div>
+                        <div class="screen-content">
+                            <div class="header-mobile">
+                                <span class="back-btn">←</span>
+                                <div class="header-title">Оформление</div>
+                                <span></span>
+                            </div>
+                            <div style="padding: 20px;">
+                                <div style="margin-bottom: 20px;">
+                                    <div style="font-size: 18px; font-weight: 600; margin-bottom: 12px; color: #1F2937;">Контактные данные</div>
+                                    <input type="text" placeholder="Имя" style="width: 100%; padding: 12px; border: 2px solid #E5E7EB; border-radius: 8px; margin-bottom: 12px; font-size: 16px;">
+                                    <input type="tel" placeholder="Телефон" style="width: 100%; padding: 12px; border: 2px solid #E5E7EB; border-radius: 8px; margin-bottom: 12px; font-size: 16px;">
+                                </div>
+                                <div style="margin-bottom: 20px;">
+                                    <div style="font-size: 18px; font-weight: 600; margin-bottom: 12px; color: #1F2937;">Адрес доставки</div>
+                                    <input type="text" placeholder="Город" style="width: 100%; padding: 12px; border: 2px solid #E5E7EB; border-radius: 8px; margin-bottom: 12px; font-size: 16px;">
+                                    <input type="text" placeholder="Улица, дом, квартира" style="width: 100%; padding: 12px; border: 2px solid #E5E7EB; border-radius: 8px; font-size: 16px;">
+                                </div>
+                                <div style="margin-bottom: 20px;">
+                                    <div style="font-size: 18px; font-weight: 600; margin-bottom: 12px; color: #1F2937;">Способ оплаты</div>
+                                    <div style="background: #F3F4F6; padding: 16px; border-radius: 8px; margin-bottom: 8px; display: flex; align-items: center; gap: 12px;">
+                                        <input type="radio" name="payment" checked>
+                                        <span style="font-size: 16px;">💳 Картой онлайн</span>
+                                    </div>
+                                    <div style="background: white; padding: 16px; border-radius: 8px; border: 1px solid #E5E7EB; display: flex; align-items: center; gap: 12px;">
+                                        <input type="radio" name="payment">
+                                        <span style="font-size: 16px;">💵 Наличными</span>
+                                    </div>
+                                </div>
+                                <div style="background: #EFF6FF; padding: 16px; border-radius: 8px; margin-bottom: 20px; border-left: 4px solid #2E5BFF;">
+                                    <div style="font-weight: 600; margin-bottom: 8px; color: #1E3A8A;">Итого: 3 748 Br</div>
+                                    <div style="font-size: 14px; color: #4B5563;">Доставка: Бесплатно</div>
+                                </div>
+                                <button class="btn-mobile btn-primary-mobile" style="width: 100%;">Подтвердить заказ</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+

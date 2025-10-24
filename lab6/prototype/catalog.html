@@ -240,12 +240,20 @@
                         Планшеты
                     </label>
                     <label class="checkbox-item">
-                        <input type="checkbox" name="category" value="watches" onchange="applyFilters()">
-                        Умные часы
+                        <input type="checkbox" name="category" value="components" onchange="applyFilters()">
+                        Комплектующие
                     </label>
                     <label class="checkbox-item">
-                        <input type="checkbox" name="category" value="tv" onchange="applyFilters()">
-                        Телевизоры
+                        <input type="checkbox" name="category" value="gaming" onchange="applyFilters()">
+                        Игровая периферия
+                    </label>
+                    <label class="checkbox-item">
+                        <input type="checkbox" name="category" value="ereaders" onchange="applyFilters()">
+                        Электронные книги
+                    </label>
+                    <label class="checkbox-item">
+                        <input type="checkbox" name="category" value="chargers" onchange="applyFilters()">
+                        Зарядные устройства
                     </label>
                 </div>
 
@@ -374,7 +382,10 @@
                 'headphones': 'Наушники',
                 'tablets': 'Планшеты',
                 'watches': 'Умные часы',
-                'tv': 'Телевизоры'
+                'components': 'Комплектующие',
+                'gaming': 'Игровая периферия',
+                'ereaders': 'Электронные книги',
+                'chargers': 'Зарядные устройства'
             };
             return names[cat] || 'Каталог';
         }

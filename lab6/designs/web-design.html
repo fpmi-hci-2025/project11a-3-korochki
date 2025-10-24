@@ -1,0 +1,788 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UX/UI Дизайн веб-приложения - ТехноМарт</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 40px 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            text-align: center;
+            color: white;
+            font-size: 42px;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .subtitle {
+            text-align: center;
+            color: rgba(255,255,255,0.9);
+            font-size: 18px;
+            margin-bottom: 50px;
+        }
+
+        .screen-section {
+            margin-bottom: 60px;
+        }
+
+        .screen-title {
+            color: white;
+            font-size: 28px;
+            font-weight: 600;
+            margin-bottom: 24px;
+            text-align: center;
+        }
+
+        .browser-frame {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.4);
+            overflow: hidden;
+            animation: fadeInUp 0.6s ease;
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .browser-header {
+            background: #F3F4F6;
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border-bottom: 1px solid #E5E7EB;
+        }
+
+        .browser-dots {
+            display: flex;
+            gap: 8px;
+        }
+
+        .dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+
+        .dot.red { background: #FF5F57; }
+        .dot.yellow { background: #FFBD2E; }
+        .dot.green { background: #28CA42; }
+
+        .address-bar {
+            flex: 1;
+            background: white;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 14px;
+            color: #6B7280;
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, #2E5BFF 0%, #1E3A8A 100%);
+            padding: 20px 60px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .logo {
+            font-size: 28px;
+            font-weight: 700;
+            color: white;
+        }
+
+        .nav-menu {
+            display: flex;
+            gap: 32px;
+            color: white;
+            font-size: 16px;
+        }
+
+        .nav-item {
+            cursor: pointer;
+            opacity: 0.9;
+            transition: opacity 0.2s;
+        }
+
+        .nav-item:hover {
+            opacity: 1;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 20px;
+            color: white;
+            font-size: 20px;
+        }
+
+        /* Hero */
+        .hero {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 80px 60px;
+            text-align: center;
+            color: white;
+        }
+
+        .hero h2 {
+            font-size: 48px;
+            margin-bottom: 16px;
+        }
+
+        .hero p {
+            font-size: 20px;
+            margin-bottom: 32px;
+            opacity: 0.95;
+        }
+
+        .search-bar {
+            max-width: 600px;
+            margin: 0 auto;
+            display: flex;
+            gap: 12px;
+        }
+
+        .search-input {
+            flex: 1;
+            padding: 16px 20px;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+        }
+
+        .search-btn {
+            padding: 16px 32px;
+            background: #10B981;
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        /* Categories */
+        .categories-section {
+            padding: 60px;
+            background: #F8FAFC;
+        }
+
+        .section-title {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 32px;
+            color: #1F2937;
+        }
+
+        .categories-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 24px;
+        }
+
+        .category-card {
+            background: white;
+            padding: 32px;
+            border-radius: 16px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        .category-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 24px rgba(0,0,0,0.15);
+        }
+
+        .category-icon {
+            font-size: 64px;
+            margin-bottom: 16px;
+        }
+
+        .category-name {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1F2937;
+        }
+
+        /* Products Grid */
+        .products-section {
+            padding: 60px;
+            background: white;
+        }
+
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 24px;
+        }
+
+        .product-card {
+            background: #F9FAFB;
+            border-radius: 16px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .product-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 24px rgba(0,0,0,0.12);
+        }
+
+        .product-image {
+            width: 100%;
+            height: 200px;
+            background: white;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 80px;
+            margin-bottom: 16px;
+        }
+
+        .product-name {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1F2937;
+            margin-bottom: 8px;
+        }
+
+        .product-rating {
+            color: #F59E0B;
+            font-size: 14px;
+            margin-bottom: 12px;
+        }
+
+        .product-price {
+            font-size: 24px;
+            font-weight: 700;
+            color: #10B981;
+            margin-bottom: 12px;
+        }
+
+        .product-btn {
+            width: 100%;
+            padding: 12px;
+            background: #2E5BFF;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        /* Product Detail */
+        .product-detail-container {
+            padding: 60px;
+            background: white;
+        }
+
+        .product-detail-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 60px;
+        }
+
+        .product-detail-image {
+            width: 100%;
+            height: 500px;
+            background: #F3F4F6;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 200px;
+        }
+
+        .product-detail-info h2 {
+            font-size: 36px;
+            margin-bottom: 12px;
+            color: #1F2937;
+        }
+
+        .product-detail-rating {
+            color: #F59E0B;
+            font-size: 20px;
+            margin-bottom: 24px;
+        }
+
+        .product-detail-price {
+            font-size: 48px;
+            font-weight: 700;
+            color: #10B981;
+            margin-bottom: 32px;
+        }
+
+        .detail-actions {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 40px;
+        }
+
+        .btn-large {
+            padding: 16px 32px;
+            border-radius: 12px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+        }
+
+        .btn-primary {
+            background: #10B981;
+            color: white;
+            flex: 1;
+        }
+
+        .btn-secondary {
+            background: #F3F4F6;
+            color: #1F2937;
+        }
+
+        .specs-table {
+            background: #F9FAFB;
+            padding: 24px;
+            border-radius: 12px;
+        }
+
+        .specs-table h3 {
+            margin-bottom: 20px;
+            font-size: 20px;
+            color: #1F2937;
+        }
+
+        .spec-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid #E5E7EB;
+            font-size: 16px;
+        }
+
+        .spec-row:last-child {
+            border-bottom: none;
+        }
+
+        /* Cart */
+        .cart-container {
+            padding: 60px;
+            background: #F8FAFC;
+            min-height: 600px;
+        }
+
+        .cart-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 32px;
+        }
+
+        .cart-items {
+            background: white;
+            padding: 32px;
+            border-radius: 16px;
+        }
+
+        .cart-item {
+            display: flex;
+            gap: 24px;
+            padding: 24px;
+            background: #F9FAFB;
+            border-radius: 12px;
+            margin-bottom: 16px;
+        }
+
+        .cart-item-image {
+            width: 120px;
+            height: 120px;
+            background: white;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 60px;
+        }
+
+        .cart-item-info {
+            flex: 1;
+        }
+
+        .cart-item-name {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #1F2937;
+        }
+
+        .cart-item-price {
+            font-size: 28px;
+            font-weight: 700;
+            color: #10B981;
+            margin-bottom: 16px;
+        }
+
+        .qty-controls {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .qty-btn-large {
+            width: 40px;
+            height: 40px;
+            background: white;
+            border: 2px solid #E5E7EB;
+            border-radius: 8px;
+            font-size: 20px;
+            cursor: pointer;
+        }
+
+        .qty-value-large {
+            font-size: 20px;
+            font-weight: 600;
+            min-width: 40px;
+            text-align: center;
+        }
+
+        .cart-summary {
+            background: white;
+            padding: 32px;
+            border-radius: 16px;
+            height: fit-content;
+        }
+
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 16px;
+            font-size: 18px;
+        }
+
+        .summary-row.total {
+            font-size: 28px;
+            font-weight: 700;
+            padding-top: 16px;
+            border-top: 2px solid #E5E7EB;
+            margin-top: 16px;
+        }
+
+        .checkout-btn {
+            width: 100%;
+            padding: 18px;
+            background: #10B981;
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 24px;
+        }
+
+        /* Footer */
+        .footer {
+            background: #1F2937;
+            padding: 40px 60px;
+            color: white;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎨 UX/UI Дизайн веб-приложения</h1>
+        <p class="subtitle">ТехноМарт - Интернет-магазин электроники</p>
+
+        <!-- Screen 1: Home Page -->
+        <div class="screen-section">
+            <div class="screen-title">1. Главная страница</div>
+            <div class="browser-frame">
+                <div class="browser-header">
+                    <div class="browser-dots">
+                        <div class="dot red"></div>
+                        <div class="dot yellow"></div>
+                        <div class="dot green"></div>
+                    </div>
+                    <div class="address-bar">🔒 https://technomart.by</div>
+                </div>
+                
+                <div class="header">
+                    <div class="logo">🛒 ТехноМарт</div>
+                    <div class="nav-menu">
+                        <div class="nav-item">Каталог</div>
+                        <div class="nav-item">Акции</div>
+                        <div class="nav-item">Доставка</div>
+                        <div class="nav-item">Контакты</div>
+                    </div>
+                    <div class="header-actions">
+                        <span>🔍</span>
+                        <span>❤️</span>
+                        <span>🛒</span>
+                        <span>👤</span>
+                    </div>
+                </div>
+
+                <div class="hero">
+                    <h2>Электроника от мировых брендов</h2>
+                    <p>Скидки до 50% на смартфоны, ноутбуки и аксессуары</p>
+                    <div class="search-bar">
+                        <input type="text" class="search-input" placeholder="Поиск товаров...">
+                        <button class="search-btn">Найти</button>
+                    </div>
+                </div>
+
+                <div class="categories-section">
+                    <div class="section-title">Популярные категории</div>
+                    <div class="categories-grid">
+                        <div class="category-card">
+                            <div class="category-icon">📱</div>
+                            <div class="category-name">Смартфоны</div>
+                        </div>
+                        <div class="category-card">
+                            <div class="category-icon">💻</div>
+                            <div class="category-name">Ноутбуки</div>
+                        </div>
+                        <div class="category-card">
+                            <div class="category-icon">🎧</div>
+                            <div class="category-name">Наушники</div>
+                        </div>
+                        <div class="category-card">
+                            <div class="category-icon">🎮</div>
+                            <div class="category-name">Комплектующие</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="products-section">
+                    <div class="section-title">Хиты продаж</div>
+                    <div class="products-grid">
+                        <div class="product-card">
+                            <div class="product-image">📱</div>
+                            <div class="product-name">Apple iPhone 15 Pro</div>
+                            <div class="product-rating">⭐⭐⭐⭐⭐</div>
+                            <div class="product-price">2 999 Br</div>
+                            <button class="product-btn">🛒 В корзину</button>
+                        </div>
+                        <div class="product-card">
+                            <div class="product-image">💻</div>
+                            <div class="product-name">MacBook Pro 14"</div>
+                            <div class="product-rating">⭐⭐⭐⭐⭐</div>
+                            <div class="product-price">4 999 Br</div>
+                            <button class="product-btn">🛒 В корзину</button>
+                        </div>
+                        <div class="product-card">
+                            <div class="product-image">🎧</div>
+                            <div class="product-name">AirPods Pro 2</div>
+                            <div class="product-rating">⭐⭐⭐⭐⭐</div>
+                            <div class="product-price">749 Br</div>
+                            <button class="product-btn">🛒 В корзину</button>
+                        </div>
+                        <div class="product-card">
+                            <div class="product-image">📱</div>
+                            <div class="product-name">Samsung Galaxy S23</div>
+                            <div class="product-rating">⭐⭐⭐⭐</div>
+                            <div class="product-price">2 499 Br</div>
+                            <button class="product-btn">🛒 В корзину</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="footer">
+                    © 2025 ТехноМарт. Все права защищены.
+                </div>
+            </div>
+        </div>
+
+        <!-- Screen 2: Product Detail -->
+        <div class="screen-section">
+            <div class="screen-title">2. Карточка товара</div>
+            <div class="browser-frame">
+                <div class="browser-header">
+                    <div class="browser-dots">
+                        <div class="dot red"></div>
+                        <div class="dot yellow"></div>
+                        <div class="dot green"></div>
+                    </div>
+                    <div class="address-bar">🔒 https://technomart.by/product/iphone-15-pro</div>
+                </div>
+
+                <div class="header">
+                    <div class="logo">🛒 ТехноМарт</div>
+                    <div class="nav-menu">
+                        <div class="nav-item">Каталог</div>
+                        <div class="nav-item">Акции</div>
+                        <div class="nav-item">Доставка</div>
+                        <div class="nav-item">Контакты</div>
+                    </div>
+                    <div class="header-actions">
+                        <span>🔍</span>
+                        <span>❤️</span>
+                        <span>🛒 <sup style="background: #EF4444; padding: 2px 6px; border-radius: 10px; font-size: 12px;">2</sup></span>
+                        <span>👤</span>
+                    </div>
+                </div>
+
+                <div class="product-detail-container">
+                    <div class="product-detail-grid">
+                        <div>
+                            <div class="product-detail-image">📱</div>
+                        </div>
+                        <div class="product-detail-info">
+                            <h2>Apple iPhone 15 Pro</h2>
+                            <div class="product-detail-rating">⭐⭐⭐⭐⭐ (4.9 из 5, 127 отзывов)</div>
+                            <div class="product-detail-price">2 999 Br</div>
+                            <div class="detail-actions">
+                                <button class="btn-large btn-primary">🛒 Добавить в корзину</button>
+                                <button class="btn-large btn-secondary">❤️</button>
+                                <button class="btn-large btn-secondary">⚖️</button>
+                            </div>
+                            <div class="specs-table">
+                                <h3>Основные характеристики</h3>
+                                <div class="spec-row">
+                                    <span><strong>Процессор</strong></span>
+                                    <span>Apple A17 Pro</span>
+                                </div>
+                                <div class="spec-row">
+                                    <span><strong>Память</strong></span>
+                                    <span>256 GB</span>
+                                </div>
+                                <div class="spec-row">
+                                    <span><strong>Камера</strong></span>
+                                    <span>48 Мп (тройная)</span>
+                                </div>
+                                <div class="spec-row">
+                                    <span><strong>Экран</strong></span>
+                                    <span>6.1" Super Retina XDR</span>
+                                </div>
+                                <div class="spec-row">
+                                    <span><strong>Батарея</strong></span>
+                                    <span>3200 мАч</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="footer">
+                    © 2025 ТехноМарт. Все права защищены.
+                </div>
+            </div>
+        </div>
+
+        <!-- Screen 3: Shopping Cart -->
+        <div class="screen-section">
+            <div class="screen-title">3. Корзина покупок</div>
+            <div class="browser-frame">
+                <div class="browser-header">
+                    <div class="browser-dots">
+                        <div class="dot red"></div>
+                        <div class="dot yellow"></div>
+                        <div class="dot green"></div>
+                    </div>
+                    <div class="address-bar">🔒 https://technomart.by/cart</div>
+                </div>
+
+                <div class="header">
+                    <div class="logo">🛒 ТехноМарт</div>
+                    <div class="nav-menu">
+                        <div class="nav-item">Каталог</div>
+                        <div class="nav-item">Акции</div>
+                        <div class="nav-item">Доставка</div>
+                        <div class="nav-item">Контакты</div>
+                    </div>
+                    <div class="header-actions">
+                        <span>🔍</span>
+                        <span>❤️</span>
+                        <span style="color: #10B981;">🛒 <sup style="background: #EF4444; padding: 2px 6px; border-radius: 10px; font-size: 12px;">2</sup></span>
+                        <span>👤</span>
+                    </div>
+                </div>
+
+                <div class="cart-container">
+                    <div class="section-title">Корзина (2 товара)</div>
+                    <div class="cart-grid">
+                        <div class="cart-items">
+                            <div class="cart-item">
+                                <div class="cart-item-image">📱</div>
+                                <div class="cart-item-info">
+                                    <div class="cart-item-name">Apple iPhone 15 Pro</div>
+                                    <div class="cart-item-price">2 999 Br</div>
+                                    <div class="qty-controls">
+                                        <button class="qty-btn-large">−</button>
+                                        <span class="qty-value-large">1</span>
+                                        <button class="qty-btn-large">+</button>
+                                        <button style="margin-left: auto; background: none; border: none; color: #EF4444; cursor: pointer; font-size: 20px;">🗑️</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="cart-item">
+                                <div class="cart-item-image">🎧</div>
+                                <div class="cart-item-info">
+                                    <div class="cart-item-name">AirPods Pro 2</div>
+                                    <div class="cart-item-price">749 Br</div>
+                                    <div class="qty-controls">
+                                        <button class="qty-btn-large">−</button>
+                                        <span class="qty-value-large">1</span>
+                                        <button class="qty-btn-large">+</button>
+                                        <button style="margin-left: auto; background: none; border: none; color: #EF4444; cursor: pointer; font-size: 20px;">🗑️</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="cart-summary">
+                            <h3 style="margin-bottom: 24px; font-size: 24px;">Итого</h3>
+                            <div class="summary-row">
+                                <span>Товары (2 шт.)</span>
+                                <span>3 748 Br</span>
+                            </div>
+                            <div class="summary-row">
+                                <span>Скидка</span>
+                                <span style="color: #EF4444;">−0 Br</span>
+                            </div>
+                            <div class="summary-row">
+                                <span>Доставка</span>
+                                <span style="color: #10B981;">Бесплатно</span>
+                            </div>
+                            <div class="summary-row total">
+                                <span>К оплате</span>
+                                <span>3 748 Br</span>
+                            </div>
+                            <button class="checkout-btn">Оформить заказ →</button>
+                            <div style="margin-top: 20px; padding: 16px; background: #EFF6FF; border-radius: 8px; font-size: 14px; color: #1E3A8A;">
+                                ✓ Бесплатная доставка при заказе от 1000 Br
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="footer">
+                    © 2025 ТехноМарт. Все права защищены.
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+

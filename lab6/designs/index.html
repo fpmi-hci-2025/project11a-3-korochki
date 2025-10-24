@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Визуальные дизайны - ТехноМарт</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            width: 100%;
+            background: white;
+            border-radius: 24px;
+            padding: 60px;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.3);
+        }
+
+        h1 {
+            font-size: 48px;
+            color: #1F2937;
+            margin-bottom: 16px;
+            text-align: center;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #6B7280;
+            font-size: 20px;
+            margin-bottom: 50px;
+        }
+
+        .design-links {
+            display: grid;
+            gap: 24px;
+        }
+
+        .design-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 32px;
+            border-radius: 16px;
+            text-decoration: none;
+            color: white;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 24px;
+        }
+
+        .design-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 24px rgba(0,0,0,0.2);
+        }
+
+        .design-icon {
+            font-size: 64px;
+            flex-shrink: 0;
+        }
+
+        .design-info {
+            flex: 1;
+        }
+
+        .design-title {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .design-description {
+            font-size: 16px;
+            opacity: 0.9;
+        }
+
+        .arrow {
+            font-size: 32px;
+            opacity: 0.8;
+        }
+
+        .info-box {
+            background: #EFF6FF;
+            padding: 24px;
+            border-radius: 12px;
+            margin-top: 32px;
+            border-left: 4px solid #2E5BFF;
+        }
+
+        .info-box h3 {
+            color: #1E3A8A;
+            margin-bottom: 12px;
+            font-size: 18px;
+        }
+
+        .info-box p {
+            color: #4B5563;
+            line-height: 1.6;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .container {
+            animation: fadeIn 0.6s ease;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎨 Визуальные дизайны</h1>
+        <p class="subtitle">ТехноМарт - Интернет-магазин электроники</p>
+
+        <div class="design-links">
+            <a href="mobile-app-design.html" class="design-card">
+                <div class="design-icon">📱</div>
+                <div class="design-info">
+                    <div class="design-title">Мобильное приложение</div>
+                    <div class="design-description">5 экранов: Главная, Каталог, Карточка товара, Корзина, Оформление</div>
+                </div>
+                <div class="arrow">→</div>
+            </a>
+
+            <a href="web-design.html" class="design-card" style="background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);">
+                <div class="design-icon">💻</div>
+                <div class="design-info">
+                    <div class="design-title">Веб-приложение</div>
+                    <div class="design-description">3 страницы: Главная, Карточка товара, Корзина покупок</div>
+                </div>
+                <div class="arrow">→</div>
+            </a>
+
+            <a href="../prototype/index.html" class="design-card" style="background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);">
+                <div class="design-icon">🚀</div>
+                <div class="design-info">
+                    <div class="design-title">Интерактивный прототип</div>
+                    <div class="design-description">Полностью функциональный прототип для тестирования</div>
+                </div>
+                <div class="arrow">→</div>
+            </a>
+        </div>
+
+        <div class="info-box">
+            <h3>📋 О дизайнах</h3>
+            <p>
+                Визуальные дизайны созданы в соответствии с требованиями лабораторной работы №6.
+                Они демонстрируют интерфейсы мобильного и веб-приложений ТехноМарт,
+                включают все ключевые экраны для проведения usability-тестирования.
+                Дизайны выполнены с использованием современных UI/UX практик и соответствуют
+                style guide проекта (Lab 5).
+            </p>
+        </div>
+    </div>
+</body>
+</html>
+
