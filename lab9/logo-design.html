@@ -1,0 +1,675 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ТехноМарт - Логотип и Иконки</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 40px 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            text-align: center;
+            color: white;
+            font-size: 2.5rem;
+            margin-bottom: 50px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 16px;
+            padding: 40px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .card-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: 10px;
+        }
+
+        .card-description {
+            font-size: 0.95rem;
+            color: #6b7280;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        /* FULL LOGO - Horizontal */
+        .logo-full {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: linear-gradient(135deg, #2563EB 0%, #3B82F6 100%);
+            padding: 20px 40px;
+            border-radius: 12px;
+            box-shadow: 0 8px 16px rgba(37, 99, 235, 0.3);
+        }
+
+        .logo-icon {
+            width: 50px;
+            height: 50px;
+            background: white;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            font-weight: 900;
+            color: #2563EB;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .logo-icon::before {
+            content: 'T';
+            position: absolute;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .logo-icon::after {
+            content: '';
+            position: absolute;
+            width: 20px;
+            height: 2px;
+            background: #2563EB;
+            bottom: 12px;
+            animation: scan 2s ease-in-out infinite;
+        }
+
+        @keyframes scan {
+            0%, 100% { transform: translateX(-10px); opacity: 0.3; }
+            50% { transform: translateX(10px); opacity: 1; }
+        }
+
+        .logo-text {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .logo-text-main {
+            font-size: 32px;
+            font-weight: 800;
+            color: white;
+            letter-spacing: -0.5px;
+            line-height: 1;
+        }
+
+        .logo-text-tagline {
+            font-size: 11px;
+            font-weight: 500;
+            color: rgba(255,255,255,0.9);
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        /* FAVICON - 32x32 simulation */
+        .favicon-container {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .favicon {
+            width: 64px;
+            height: 64px;
+            background: linear-gradient(135deg, #2563EB 0%, #3B82F6 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.4);
+            position: relative;
+        }
+
+        .favicon-letter {
+            font-size: 42px;
+            font-weight: 900;
+            color: white;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .favicon-small {
+            width: 32px;
+            height: 32px;
+            font-size: 22px;
+        }
+
+        .favicon-tiny {
+            width: 16px;
+            height: 16px;
+            font-size: 11px;
+            border-radius: 4px;
+        }
+
+        /* MOBILE APP ICON */
+        .app-icon {
+            width: 180px;
+            height: 180px;
+            background: linear-gradient(135deg, #2563EB 0%, #1E40AF 100%);
+            border-radius: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 
+                0 20px 40px rgba(37, 99, 235, 0.4),
+                inset 0 -4px 8px rgba(0,0,0,0.2),
+                inset 0 4px 8px rgba(255,255,255,0.2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .app-icon::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.2) 0%, transparent 70%);
+            animation: shine 3s ease-in-out infinite;
+        }
+
+        @keyframes shine {
+            0%, 100% { transform: translate(-50%, -50%); }
+            50% { transform: translate(50%, 50%); }
+        }
+
+        .app-icon-content {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .app-icon-symbol {
+            font-size: 90px;
+            font-weight: 900;
+            color: white;
+            text-shadow: 0 4px 8px rgba(0,0,0,0.3);
+            font-family: 'Inter', sans-serif;
+        }
+
+        .app-icon-text {
+            font-size: 18px;
+            font-weight: 700;
+            color: white;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+
+        /* MONOCHROME VERSIONS */
+        .logo-variants {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: center;
+        }
+
+        .logo-variant {
+            padding: 20px 30px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .logo-variant-dark {
+            background: #1f2937;
+        }
+
+        .logo-variant-light {
+            background: #f9fafb;
+            border: 2px solid #e5e7eb;
+        }
+
+        .logo-variant-white {
+            background: white;
+            border: 2px solid #e5e7eb;
+        }
+
+        .logo-variant-icon {
+            width: 40px;
+            height: 40px;
+            background: white;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            font-weight: 900;
+            color: #2563EB;
+        }
+
+        .logo-variant-dark .logo-variant-icon {
+            background: #2563EB;
+            color: white;
+        }
+
+        .logo-variant-text {
+            font-size: 24px;
+            font-weight: 800;
+            color: white;
+        }
+
+        .logo-variant-light .logo-variant-text,
+        .logo-variant-white .logo-variant-text {
+            color: #1f2937;
+        }
+
+        /* USAGE EXAMPLES */
+        .usage-example {
+            background: #f9fafb;
+            border-radius: 12px;
+            padding: 20px;
+            border: 2px solid #e5e7eb;
+        }
+
+        .browser-mockup {
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .browser-header {
+            background: #e5e7eb;
+            padding: 10px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .browser-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #9ca3af;
+        }
+
+        .browser-content {
+            padding: 20px;
+            background: #2563EB;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .phone-mockup {
+            width: 200px;
+            background: #1f2937;
+            border-radius: 30px;
+            padding: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+
+        .phone-screen {
+            background: linear-gradient(180deg, #667eea 0%, #764ba2 100%);
+            border-radius: 20px;
+            padding: 30px 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .phone-icon-row {
+            display: flex;
+            justify-content: space-around;
+        }
+
+        .phone-app-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #2563EB 0%, #1E40AF 100%);
+            border-radius: 13px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 30px;
+            font-weight: 900;
+            color: white;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+        }
+
+        /* COLOR PALETTE */
+        .color-palette {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .color-swatch {
+            text-align: center;
+        }
+
+        .color-box {
+            width: 80px;
+            height: 80px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            margin-bottom: 8px;
+        }
+
+        .color-label {
+            font-size: 11px;
+            font-weight: 600;
+            color: #4b5563;
+            margin-bottom: 2px;
+        }
+
+        .color-code {
+            font-size: 10px;
+            font-family: monospace;
+            color: #9ca3af;
+        }
+
+        .download-section {
+            background: white;
+            border-radius: 16px;
+            padding: 30px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        .download-section h2 {
+            font-size: 1.8rem;
+            color: #1f2937;
+            margin-bottom: 15px;
+        }
+
+        .download-section p {
+            color: #6b7280;
+            margin-bottom: 25px;
+        }
+
+        .download-buttons {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .download-btn {
+            padding: 12px 24px;
+            background: #2563EB;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .download-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(37, 99, 235, 0.4);
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 1.8rem;
+            }
+
+            .grid {
+                grid-template-columns: 1fr;
+            }
+
+            .logo-full {
+                flex-direction: column;
+                padding: 30px;
+            }
+
+            .app-icon {
+                width: 150px;
+                height: 150px;
+                border-radius: 32px;
+            }
+
+            .app-icon-symbol {
+                font-size: 70px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎨 ТехноМарт - Брендинг и Визуальные Элементы</h1>
+
+        <!-- Main Logo -->
+        <div class="grid">
+            <div class="card">
+                <h2 class="card-title">Основной логотип</h2>
+                <p class="card-description">Полная версия для веб-приложения (header, footer)</p>
+                <div class="logo-full">
+                    <div class="logo-icon"></div>
+                    <div class="logo-text">
+                        <div class="logo-text-main">ТехноМарт</div>
+                        <div class="logo-text-tagline">Electronics Store</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Favicon Variants -->
+            <div class="card">
+                <h2 class="card-title">Favicon (для браузера)</h2>
+                <p class="card-description">Различные размеры: 16x16, 32x32, 64x64 px</p>
+                <div class="favicon-container">
+                    <div>
+                        <div class="favicon favicon-tiny">
+                            <div class="favicon-letter">T</div>
+                        </div>
+                        <p style="font-size: 11px; color: #9ca3af; margin-top: 5px;">16x16</p>
+                    </div>
+                    <div>
+                        <div class="favicon favicon-small">
+                            <div class="favicon-letter">T</div>
+                        </div>
+                        <p style="font-size: 11px; color: #9ca3af; margin-top: 5px;">32x32</p>
+                    </div>
+                    <div>
+                        <div class="favicon">
+                            <div class="favicon-letter">T</div>
+                        </div>
+                        <p style="font-size: 11px; color: #9ca3af; margin-top: 5px;">64x64</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Mobile App Icon -->
+            <div class="card">
+                <h2 class="card-title">Иконка мобильного приложения</h2>
+                <p class="card-description">iOS/Android app icon (180x180, 1024x1024)</p>
+                <div class="app-icon">
+                    <div class="app-icon-content">
+                        <div class="app-icon-symbol">T</div>
+                        <div class="app-icon-text">Mart</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Logo Variants -->
+        <div class="card" style="margin-bottom: 30px;">
+            <h2 class="card-title">Варианты логотипа</h2>
+            <p class="card-description">Для различных фонов и контекстов</p>
+            <div class="logo-variants">
+                <div class="logo-variant logo-variant-dark">
+                    <div class="logo-variant-icon">T</div>
+                    <div class="logo-variant-text">ТехноМарт</div>
+                </div>
+                <div class="logo-variant logo-variant-light">
+                    <div class="logo-variant-icon">T</div>
+                    <div class="logo-variant-text">ТехноМарт</div>
+                </div>
+                <div class="logo-variant logo-variant-white">
+                    <div class="logo-variant-icon">T</div>
+                    <div class="logo-variant-text">ТехноМарт</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Usage Examples -->
+        <div class="grid">
+            <div class="card">
+                <h2 class="card-title">Использование в веб-приложении</h2>
+                <p class="card-description">Пример в header сайта</p>
+                <div class="usage-example">
+                    <div class="browser-mockup">
+                        <div class="browser-header">
+                            <div class="browser-dot"></div>
+                            <div class="browser-dot"></div>
+                            <div class="browser-dot"></div>
+                        </div>
+                        <div class="browser-content">
+                            <div class="logo-icon"></div>
+                            <div class="logo-text">
+                                <div class="logo-text-main" style="font-size: 24px;">ТехноМарт</div>
+                                <div class="logo-text-tagline" style="font-size: 9px;">Electronics Store</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2 class="card-title">Мобильное приложение</h2>
+                <p class="card-description">Иконка на экране смартфона</p>
+                <div class="phone-mockup">
+                    <div class="phone-screen">
+                        <div class="phone-icon-row">
+                            <div class="phone-app-icon">T</div>
+                            <div class="phone-app-icon" style="opacity: 0.3;">?</div>
+                            <div class="phone-app-icon" style="opacity: 0.3;">?</div>
+                        </div>
+                        <p style="color: white; text-align: center; font-size: 11px; font-weight: 600;">ТехноМарт</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Color Palette -->
+        <div class="card" style="margin: 30px 0;">
+            <h2 class="card-title">Цветовая палитра бренда</h2>
+            <p class="card-description">Основные цвета для логотипа и брендинга</p>
+            <div class="color-palette">
+                <div class="color-swatch">
+                    <div class="color-box" style="background: #2563EB;"></div>
+                    <div class="color-label">Primary Blue</div>
+                    <div class="color-code">#2563EB</div>
+                </div>
+                <div class="color-swatch">
+                    <div class="color-box" style="background: #3B82F6;"></div>
+                    <div class="color-label">Light Blue</div>
+                    <div class="color-code">#3B82F6</div>
+                </div>
+                <div class="color-swatch">
+                    <div class="color-box" style="background: #1E40AF;"></div>
+                    <div class="color-label">Dark Blue</div>
+                    <div class="color-code">#1E40AF</div>
+                </div>
+                <div class="color-swatch">
+                    <div class="color-box" style="background: #FFFFFF; border: 2px solid #e5e7eb;"></div>
+                    <div class="color-label">White</div>
+                    <div class="color-code">#FFFFFF</div>
+                </div>
+                <div class="color-swatch">
+                    <div class="color-box" style="background: #1F2937;"></div>
+                    <div class="color-label">Dark Gray</div>
+                    <div class="color-code">#1F2937</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Download Section -->
+        <div class="download-section">
+            <h2>📥 Экспорт файлов</h2>
+            <p>Логотип и иконки готовы к использованию в проекте</p>
+            <div class="download-buttons">
+                <button class="download-btn">Скачать Логотип (SVG)</button>
+                <button class="download-btn">Скачать Favicon (ICO)</button>
+                <button class="download-btn">Скачать App Icon (PNG)</button>
+                <button class="download-btn">Скачать все форматы (ZIP)</button>
+            </div>
+            <p style="margin-top: 20px; font-size: 14px; color: #9ca3af;">
+                Для реального проекта используйте векторные форматы (SVG) и экспортируйте в необходимые размеры
+            </p>
+        </div>
+
+        <!-- Technical Specifications -->
+        <div class="card" style="margin-top: 30px;">
+            <h2 class="card-title">Технические характеристики</h2>
+            <div style="text-align: left; width: 100%; max-width: 600px;">
+                <h3 style="color: #2563EB; margin-bottom: 10px;">Favicon (для веб-приложения):</h3>
+                <ul style="color: #4b5563; line-height: 1.8;">
+                    <li><code>favicon.ico</code> - 16x16, 32x32 (multi-size ICO)</li>
+                    <li><code>favicon-16x16.png</code> - для старых браузеров</li>
+                    <li><code>favicon-32x32.png</code> - стандартный размер</li>
+                    <li><code>apple-touch-icon.png</code> - 180x180 (iOS Safari)</li>
+                </ul>
+
+                <h3 style="color: #2563EB; margin: 20px 0 10px;">Mobile App Icon:</h3>
+                <ul style="color: #4b5563; line-height: 1.8;">
+                    <li><code>icon-192x192.png</code> - Android</li>
+                    <li><code>icon-512x512.png</code> - Android (high-res)</li>
+                    <li><code>icon-180x180.png</code> - iOS</li>
+                    <li><code>icon-1024x1024.png</code> - App Store/Play Store</li>
+                </ul>
+
+                <h3 style="color: #2563EB; margin: 20px 0 10px;">Логотип:</h3>
+                <ul style="color: #4b5563; line-height: 1.8;">
+                    <li><code>logo.svg</code> - векторный формат (предпочтительно)</li>
+                    <li><code>logo.png</code> - 300x100 (для использования в документах)</li>
+                    <li><code>logo-white.svg</code> - для тёмных фонов</li>
+                    <li><code>logo-icon-only.svg</code> - только иконка без текста</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Add download functionality (simulation)
+        document.querySelectorAll('.download-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const filename = this.textContent.replace('Скачать ', '').replace(' ', '_');
+                alert(`В реальном проекте здесь будет скачивание файла: ${filename}`);
+            });
+        });
+    </script>
+</body>
+</html>
+

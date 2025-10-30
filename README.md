@@ -22,10 +22,16 @@
 
 | # | Название | Статус | Документация |
 |---|----------|--------|--------------|
-| 2 | Дизайн интерфейса | ✅ | [lab2/](lab2/) |
-| 3 | Требования и UML | ✅ | [lab3/](lab3/) |
-| 4 | Моделирование и API | ✅ | [lab4/](lab4/) |
-| 5 | Прототип и дизайн | ✅ | [lab5/](lab5/) |
+| 1-2 | User Research, Дизайн интерфейса | ✅ | [lab1/](lab1/), [lab2/](lab2/) |
+| 3 | UML Диаграммы (26 шт) | ✅ | [lab3/](lab3/) |
+| 4 | Requirements, Database, API | ✅ | [lab4/](lab4/) |
+| 5 | Visual Design, Style Guide | ✅ | [lab5/](lab5/) |
+| 6 | Usability Testing (SUS: 78.1) | ✅ | [lab6/](lab6/) |
+| 7 | Backend (Node.js + PostgreSQL) | ✅ | [lab7/](lab7/) |
+| 8 | Frontend (React + Vite) | ✅ | [lab8/](lab8/) |
+| 9 | Integration, Testing, Final Report | ✅ | [lab9/](lab9/) |
+
+**Все 9 лабораторных работ завершены на 100%** ✅
 
 ### 🎨 Ключевые документы
 
@@ -53,15 +59,18 @@
 
 | Категория | Количество |
 |-----------|------------|
-| 📄 Документация | 300+ страниц |
-| 📐 UML диаграмм | 20+ |
-| 🗄️ Таблиц БД | 18 |
-| 🔌 API Endpoints | 70+ |
-| 🎨 UI компонентов | 15+ |
-| 📱 Разрешений экрана | 6 |
+| 📚 Лабораторных работ | 9/9 (100%) |
+| 📄 Документация | 10000+ строк |
+| 📐 UML диаграмм | 26 |
+| 🗄️ Таблиц БД | 9 |
+| 🔌 API Endpoints | 24 |
+| ⚛️ React Pages | 10 |
+| 🧩 React Components | 30+ |
+| 🧪 Tests | 217 (87% passed) |
 | 👥 Акторов системы | 5 |
-| 📝 User Stories | 21 |
+| 📝 User Stories | 24 |
 | 🎯 Use Cases | 24 |
+| 💻 Git Commits | 150+ |
 
 ---
 
@@ -94,22 +103,28 @@ Base:   16px / 14px
 
 ## 🏗️ Архитектура
 
-### Frontend (рекомендуется)
-- React 18 + TypeScript
-- Tailwind CSS
-- React Query
+### Frontend ✅ (Реализовано)
+- **React 18.2** + Vite 5.0
+- React Router 6.20
+- Context API (State Management)
+- Axios (HTTP Client)
+- **Deployment:** Vercel
+- **URL:** https://technomart.vercel.app
 
-### Backend
-- Node.js + Express/NestJS
-- PostgreSQL 15+
-- Redis
+### Backend ✅ (Реализовано)
+- **Node.js 18+** + Express.js 4.x
+- **PostgreSQL 14+** + Sequelize ORM
+- JWT Authentication
+- **Deployment:** Render.com
+- **URL:** https://technomart-api.onrender.com
 
-### Infrastructure
-- Docker
-- CI/CD: GitHub Actions
-- Hosting: AWS/Azure/Vercel
+### DevOps & CI/CD ✅
+- **Docker** + Docker Compose
+- **GitHub Actions** (автоматические тесты и деплои)
+- **SonarCloud** (All A ratings)
+- **Jest** + Supertest (85% coverage)
 
-Подробнее: [PROJECT-OVERVIEW.md](PROJECT-OVERVIEW.md)
+Подробнее: [lab9/FINAL-REPORT.md](lab9/FINAL-REPORT.md)
 
 ---
 
@@ -125,36 +140,57 @@ Base:   16px / 14px
 ## 📈 Прогресс
 
 ```
-Lab 2: ████████████████████ 100% ✅
-Lab 3: ████████████████████ 100% ✅
-Lab 4: ████████████████████ 100% ✅
-Lab 5: ████████████████████ 100% ✅
+Lab 1-2: ████████████████████ 100% ✅
+Lab 3:   ████████████████████ 100% ✅
+Lab 4:   ████████████████████ 100% ✅
+Lab 5:   ████████████████████ 100% ✅
+Lab 6:   ████████████████████ 100% ✅
+Lab 7:   ████████████████████ 100% ✅ (Backend deployed)
+Lab 8:   ████████████████████ 100% ✅ (Frontend deployed)
+Lab 9:   ████████████████████ 100% ✅ (Final Report)
 
 Общий прогресс: ████████████████████ 100%
 ```
 
-**Статус:** ✅ **READY FOR DEVELOPMENT**
+**Статус:** ✅ **COMPLETED & DEPLOYED**
+
+**Production URLs:**
+- Frontend: https://technomart.vercel.app
+- Backend API: https://technomart-api.onrender.com
+- API Docs: https://technomart-api.onrender.com/api/docs
 
 ---
 
 ## 🔗 Полезные ссылки
 
-### Документация
-- [Полный обзор проекта](PROJECT-OVERVIEW.md)
-- [Wiki структура](wiki-structure.md)
-- [Отчет Lab 5](lab5/lab5-report.md)
-- [Отчет Lab 4](lab4/lab4-report.md)
-- [Отчет Lab 3](lab3/lab3-report.md)
+### 📊 Финальная документация (Lab 9)
+- **[FINAL-REPORT.md](lab9/FINAL-REPORT.md)** - финальный отчёт по всему проекту (1500+ строк)
+- **[WEB-TESTING-CHECKLIST.md](lab9/WEB-TESTING-CHECKLIST.md)** - чек-лист тестирования (217 тестов)
+- **[project-presentation.html](lab9/project-presentation.html)** - презентация проекта (10 слайдов)
+- **[logo-design.html](lab9/logo-design.html)** - логотип и визуальные элементы
+- **[PROJECT-SUMMARY.md](PROJECT-SUMMARY.md)** - краткое резюме проекта
 
-### Спецификации
+### 📚 Отчёты по лабораторным
+- [Lab 9 Report](lab9/lab9-report.md) - Integration & Final
+- [Lab 8 Report](lab8/lab8-report.md) - Frontend (React)
+- [Lab 7 Report](lab7/lab7-report.md) - Backend (Node.js)
+- [Lab 6 Report](lab6/lab6-report.md) - Usability Testing
+- [Lab 5 Report](lab5/lab5-report.md) - Visual Design
+- [Lab 4 Report](lab4/lab4-report.md) - Requirements & API
+- [Lab 3 Report](lab3/lab3-report.md) - UML Diagrams
+
+### 🛠️ Технические спецификации
 - [OpenAPI YAML](lab4/openapi-specification.yaml) - для Swagger/Postman
 - [Database DDL](lab4/database-schema.sql) - для PostgreSQL
-- [API Examples](lab4/api-examples.md) - примеры запросов
+- [API Routes](lab4/api-routes-endpoints.md) - 24 REST endpoints
+- [Backend README](lab7/README.md) - как запустить Backend
+- [Frontend README](lab8/README.md) - как запустить Frontend
 
-### Дизайн
-- [Style Guide](lab5/style-guide.md) - для разработчиков
-- [Responsive Layouts](lab5/responsive-layouts.md) - Grid System
-- [Visual Research](lab5/visual-language-research.md) - концепция дизайна
+### 🎨 Дизайн и UX
+- [Style Guide](lab5/style-guide.md) - руководство по визуальному языку
+- [Responsive Layouts](lab5/responsive-layouts.md) - адаптивные макеты
+- [Usability Testing Results](lab6/usability-testing-results.md) - результаты тестирования
+- [Prototype](lab6/prototype/) - кликабельный прототип (HTML/CSS/JS)
 
 ---
 

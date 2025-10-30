@@ -1,0 +1,957 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ТехноМарт - Презентация проекта</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #0f172a;
+            color: #e2e8f0;
+            overflow-x: hidden;
+        }
+
+        .presentation {
+            width: 100vw;
+            height: 100vh;
+            overflow-y: scroll;
+            scroll-snap-type: y mandatory;
+            scroll-behavior: smooth;
+        }
+
+        .slide {
+            width: 100vw;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 60px 40px;
+            scroll-snap-align: start;
+            position: relative;
+        }
+
+        /* Slide backgrounds */
+        .slide-1 { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+        .slide-2 { background: linear-gradient(135deg, #2563EB 0%, #1E40AF 100%); }
+        .slide-3 { background: linear-gradient(135deg, #10B981 0%, #059669 100%); }
+        .slide-4 { background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%); }
+        .slide-5 { background: linear-gradient(135deg, #8B5CF6 0%, #7C3AED 100%); }
+        .slide-6 { background: linear-gradient(135deg, #EC4899 0%, #DB2777 100%); }
+        .slide-7 { background: linear-gradient(135deg, #06B6D4 0%, #0891B2 100%); }
+        .slide-8 { background: linear-gradient(135deg, #EF4444 0%, #DC2626 100%); }
+        .slide-9 { background: linear-gradient(135deg, #14B8A6 0%, #0D9488 100%); }
+        .slide-10 { background: linear-gradient(135deg, #1f2937 0%, #111827 100%); }
+
+        h1 {
+            font-size: clamp(2rem, 5vw, 4rem);
+            font-weight: 900;
+            text-align: center;
+            margin-bottom: 20px;
+            text-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            color: white;
+            animation: fadeInUp 0.8s ease-out;
+        }
+
+        h2 {
+            font-size: clamp(1.5rem, 3vw, 2.5rem);
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 30px;
+            color: white;
+            animation: fadeInUp 0.8s ease-out 0.2s backwards;
+        }
+
+        p, li {
+            font-size: clamp(1rem, 2vw, 1.3rem);
+            line-height: 1.6;
+            color: rgba(255,255,255,0.95);
+        }
+
+        .subtitle {
+            font-size: clamp(1.2rem, 2.5vw, 1.8rem);
+            font-weight: 500;
+            text-align: center;
+            margin-bottom: 40px;
+            color: rgba(255,255,255,0.9);
+            animation: fadeInUp 0.8s ease-out 0.4s backwards;
+        }
+
+        .content {
+            max-width: 1000px;
+            width: 100%;
+            animation: fadeInUp 0.8s ease-out 0.6s backwards;
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+            margin-top: 40px;
+        }
+
+        .grid-3 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 25px;
+            margin-top: 40px;
+        }
+
+        .card {
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            padding: 30px;
+            border: 1px solid rgba(255,255,255,0.2);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 48px rgba(0,0,0,0.2);
+        }
+
+        .card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+            color: white;
+        }
+
+        .card ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .card li {
+            padding: 8px 0;
+            padding-left: 25px;
+            position: relative;
+        }
+
+        .card li::before {
+            content: '✓';
+            position: absolute;
+            left: 0;
+            color: #10B981;
+            font-weight: bold;
+            font-size: 1.2em;
+        }
+
+        .stat-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+            margin-top: 40px;
+        }
+
+        .stat {
+            text-align: center;
+            padding: 20px;
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .stat-number {
+            font-size: clamp(2rem, 4vw, 3.5rem);
+            font-weight: 900;
+            color: white;
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        .stat-label {
+            font-size: clamp(0.9rem, 1.5vw, 1.1rem);
+            color: rgba(255,255,255,0.9);
+        }
+
+        .tech-stack {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 40px;
+        }
+
+        .tech-badge {
+            background: rgba(255,255,255,0.15);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.3);
+            border-radius: 24px;
+            padding: 12px 24px;
+            font-weight: 600;
+            color: white;
+            font-size: 1rem;
+            transition: transform 0.2s, background 0.2s;
+        }
+
+        .tech-badge:hover {
+            transform: scale(1.1);
+            background: rgba(255,255,255,0.25);
+        }
+
+        .timeline {
+            position: relative;
+            padding: 40px 0;
+            margin-top: 40px;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 4px;
+            height: 100%;
+            background: rgba(255,255,255,0.3);
+        }
+
+        .timeline-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 40px;
+            position: relative;
+        }
+
+        .timeline-item:nth-child(odd) {
+            flex-direction: row-reverse;
+        }
+
+        .timeline-content {
+            flex: 1;
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
+            padding: 20px;
+            border: 1px solid rgba(255,255,255,0.2);
+            margin: 0 20px;
+        }
+
+        .timeline-dot {
+            width: 20px;
+            height: 20px;
+            background: white;
+            border-radius: 50%;
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            box-shadow: 0 0 0 4px rgba(255,255,255,0.3);
+        }
+
+        .logo-showcase {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+            margin: 40px 0;
+        }
+
+        .logo-icon-big {
+            width: 120px;
+            height: 120px;
+            background: white;
+            border-radius: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 80px;
+            font-weight: 900;
+            color: #2563EB;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+        }
+
+        .logo-text-big {
+            font-size: 4rem;
+            font-weight: 900;
+            color: white;
+            text-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+
+        .navigation {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 1000;
+            display: flex;
+            gap: 10px;
+            background: rgba(0,0,0,0.5);
+            backdrop-filter: blur(10px);
+            padding: 10px 20px;
+            border-radius: 24px;
+        }
+
+        .nav-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.5);
+            cursor: pointer;
+            transition: background 0.3s, transform 0.3s;
+        }
+
+        .nav-dot:hover,
+        .nav-dot.active {
+            background: white;
+            transform: scale(1.3);
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .table {
+            width: 100%;
+            margin-top: 30px;
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .table th,
+        .table td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .table th {
+            background: rgba(255,255,255,0.15);
+            font-weight: 700;
+            color: white;
+        }
+
+        .table tr:last-child td {
+            border-bottom: none;
+        }
+
+        @media (max-width: 768px) {
+            .slide {
+                padding: 40px 20px;
+            }
+
+            .timeline::before {
+                left: 20px;
+            }
+
+            .timeline-item,
+            .timeline-item:nth-child(odd) {
+                flex-direction: row;
+            }
+
+            .timeline-dot {
+                left: 20px;
+            }
+
+            .timeline-content {
+                margin-left: 50px;
+                margin-right: 0;
+            }
+
+            .logo-showcase {
+                flex-direction: column;
+            }
+
+            .logo-text-big {
+                font-size: 2.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="presentation">
+        <!-- Slide 1: Title -->
+        <div class="slide slide-1">
+            <div class="logo-showcase">
+                <div class="logo-icon-big">T</div>
+                <div class="logo-text-big">ТехноМарт</div>
+            </div>
+            <h1>Интернет-магазин электроники</h1>
+            <p class="subtitle">Fullstack проект по курсу "Проектирование человеко-машинных интерфейсов"</p>
+            <div style="margin-top: 40px; text-align: center;">
+                <p><strong>Команда:</strong> korochki</p>
+                <p><strong>Группа:</strong> 11а-3</p>
+                <p><strong>Университет:</strong> БГУ, ФПМИ, Кафедра ТП</p>
+                <p style="margin-top: 20px; font-size: 0.9rem; opacity: 0.8;">30 октября 2025</p>
+            </div>
+        </div>
+
+        <!-- Slide 2: Project Overview -->
+        <div class="slide slide-2">
+            <h2>📋 Обзор проекта</h2>
+            <div class="content">
+                <div class="grid-2">
+                    <div class="card">
+                        <h3>🎯 Цель</h3>
+                        <p>Разработать современный интернет-магазин электроники с полным функционалом для покупателей и администраторов</p>
+                    </div>
+                    <div class="card">
+                        <h3>👥 Целевая аудитория</h3>
+                        <ul>
+                            <li>Энтузиасты технологий (25-35 лет)</li>
+                            <li>Профессионалы (30-45 лет)</li>
+                            <li>Студенты (18-25 лет)</li>
+                            <li>Бизнес-клиенты</li>
+                        </ul>
+                    </div>
+                    <div class="card">
+                        <h3>✨ Ключевые функции</h3>
+                        <ul>
+                            <li>Каталог с фильтрацией</li>
+                            <li>Корзина и заказы</li>
+                            <li>Авторизация (JWT)</li>
+                            <li>Отзывы и рейтинги</li>
+                            <li>Личный кабинет</li>
+                            <li>Админ-панель</li>
+                        </ul>
+                    </div>
+                    <div class="card">
+                        <h3>🏗️ Архитектура</h3>
+                        <p><strong>Backend:</strong> Node.js + Express + PostgreSQL</p>
+                        <p><strong>Frontend:</strong> React + Vite + Context API</p>
+                        <p><strong>Deploy:</strong> Render + Vercel</p>
+                        <p><strong>CI/CD:</strong> GitHub Actions</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 3: Labs Completed -->
+        <div class="slide slide-3">
+            <h2>📚 Выполненные лабораторные работы (9)</h2>
+            <div class="content">
+                <div class="timeline">
+                    <div class="timeline-item">
+                        <div class="timeline-dot"></div>
+                        <div class="timeline-content">
+                            <h3>Lab 1-2: User Research</h3>
+                            <p>Personas, Journey Maps, Impact Mapping, Опросы, Карточная сортировка</p>
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-dot"></div>
+                        <div class="timeline-content">
+                            <h3>Lab 3: UML Диаграммы</h3>
+                            <p>Use Cases, Activity, Class, Component, Deployment, Event Storming, C4 Model</p>
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-dot"></div>
+                        <div class="timeline-content">
+                            <h3>Lab 4: Requirements & API</h3>
+                            <p>User Stories, Database ERD, API Design (24 endpoints), OpenAPI/Swagger</p>
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-dot"></div>
+                        <div class="timeline-content">
+                            <h3>Lab 5: Visual Design</h3>
+                            <p>Style Guide, Color Palette, Typography, Figma Prototypes (Web + Mobile)</p>
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-dot"></div>
+                        <div class="timeline-content">
+                            <h3>Lab 6: Usability Testing</h3>
+                            <p>Card Sorting (TreeJack), GOMS/KLM, SUS Score (78.1), Метрики юзабилити</p>
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-dot"></div>
+                        <div class="timeline-content">
+                            <h3>Lab 7: Backend Development</h3>
+                            <p>Node.js API, PostgreSQL, Sequelize, JWT Auth, Unit Tests (85% coverage)</p>
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-dot"></div>
+                        <div class="timeline-content">
+                            <h3>Lab 8: Frontend Development</h3>
+                            <p>React App (10 pages, 30+ components), Responsive Design, Context API</p>
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-dot"></div>
+                        <div class="timeline-content">
+                            <h3>Lab 9: Integration & Testing</h3>
+                            <p>Финальный отчёт, Чек-листы (217 тестов), Логотип, Презентация</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 4: Tech Stack -->
+        <div class="slide slide-4">
+            <h2>🛠️ Технологический стек</h2>
+            <div class="content">
+                <h3 style="text-align: center; color: white; margin-bottom: 20px;">Backend</h3>
+                <div class="tech-stack">
+                    <div class="tech-badge">Node.js 18+</div>
+                    <div class="tech-badge">Express.js 4.x</div>
+                    <div class="tech-badge">PostgreSQL 14+</div>
+                    <div class="tech-badge">Sequelize ORM</div>
+                    <div class="tech-badge">JWT Auth</div>
+                    <div class="tech-badge">bcryptjs</div>
+                    <div class="tech-badge">Jest + Supertest</div>
+                    <div class="tech-badge">Docker</div>
+                </div>
+
+                <h3 style="text-align: center; color: white; margin: 40px 0 20px;">Frontend</h3>
+                <div class="tech-stack">
+                    <div class="tech-badge">React 18.2</div>
+                    <div class="tech-badge">React Router 6.20</div>
+                    <div class="tech-badge">Vite 5.0</div>
+                    <div class="tech-badge">Axios 1.6</div>
+                    <div class="tech-badge">Context API</div>
+                    <div class="tech-badge">CSS Variables</div>
+                    <div class="tech-badge">Custom Hooks</div>
+                </div>
+
+                <h3 style="text-align: center; color: white; margin: 40px 0 20px;">DevOps & Tools</h3>
+                <div class="tech-stack">
+                    <div class="tech-badge">GitHub Actions</div>
+                    <div class="tech-badge">SonarCloud</div>
+                    <div class="tech-badge">Render.com</div>
+                    <div class="tech-badge">Vercel</div>
+                    <div class="tech-badge">Docker Compose</div>
+                    <div class="tech-badge">ESLint</div>
+                    <div class="tech-badge">Prettier</div>
+                </div>
+
+                <h3 style="text-align: center; color: white; margin: 40px 0 20px;">Design</h3>
+                <div class="tech-stack">
+                    <div class="tech-badge">Figma</div>
+                    <div class="tech-badge">PlantUML</div>
+                    <div class="tech-badge">Draw.io</div>
+                    <div class="tech-badge">HTML/CSS Prototypes</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 5: Key Metrics -->
+        <div class="slide slide-5">
+            <h2>📊 Ключевые метрики проекта</h2>
+            <div class="content">
+                <div class="stat-grid">
+                    <div class="stat">
+                        <span class="stat-number">24</span>
+                        <span class="stat-label">API Endpoints</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-number">9</span>
+                        <span class="stat-label">Database Models</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-number">10</span>
+                        <span class="stat-label">React Pages</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-number">30+</span>
+                        <span class="stat-label">React Components</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-number">85%</span>
+                        <span class="stat-label">Test Coverage</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-number">94</span>
+                        <span class="stat-label">Lighthouse Score</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-number">78.1</span>
+                        <span class="stat-label">SUS Score</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-number">217</span>
+                        <span class="stat-label">Tests Executed</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-number">150+</span>
+                        <span class="stat-label">Git Commits</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-number">2.4s</span>
+                        <span class="stat-label">Time to Interactive</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 6: Architecture -->
+        <div class="slide slide-6">
+            <h2>🏗️ Архитектура системы</h2>
+            <div class="content">
+                <div class="card" style="margin-bottom: 30px;">
+                    <h3 style="text-align: center;">Three-Tier Architecture</h3>
+                    <div style="display: flex; justify-content: space-around; align-items: center; margin-top: 30px; flex-wrap: wrap; gap: 20px;">
+                        <div style="text-align: center;">
+                            <div style="font-size: 3rem; margin-bottom: 10px;">🖥️</div>
+                            <h4>Frontend</h4>
+                            <p style="font-size: 0.9rem; opacity: 0.9;">React SPA</p>
+                            <p style="font-size: 0.9rem; opacity: 0.9;">Vercel</p>
+                        </div>
+                        <div style="font-size: 2rem; opacity: 0.5;">↔️</div>
+                        <div style="text-align: center;">
+                            <div style="font-size: 3rem; margin-bottom: 10px;">⚙️</div>
+                            <h4>Backend</h4>
+                            <p style="font-size: 0.9rem; opacity: 0.9;">Express API</p>
+                            <p style="font-size: 0.9rem; opacity: 0.9;">Render.com</p>
+                        </div>
+                        <div style="font-size: 2rem; opacity: 0.5;">↔️</div>
+                        <div style="text-align: center;">
+                            <div style="font-size: 3rem; margin-bottom: 10px;">🗄️</div>
+                            <h4>Database</h4>
+                            <p style="font-size: 0.9rem; opacity: 0.9;">PostgreSQL</p>
+                            <p style="font-size: 0.9rem; opacity: 0.9;">Render Managed</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid-2">
+                    <div class="card">
+                        <h3>Backend Features</h3>
+                        <ul>
+                            <li>RESTful API (24 endpoints)</li>
+                            <li>JWT Authentication</li>
+                            <li>Role-based Access Control</li>
+                            <li>Input Validation</li>
+                            <li>Error Handling</li>
+                            <li>Sequelize ORM</li>
+                            <li>Unit Tests (Jest)</li>
+                        </ul>
+                    </div>
+                    <div class="card">
+                        <h3>Frontend Features</h3>
+                        <ul>
+                            <li>React 18 + Hooks</li>
+                            <li>Context API (State)</li>
+                            <li>React Router (Navigation)</li>
+                            <li>Axios (HTTP Client)</li>
+                            <li>Responsive Design</li>
+                            <li>Loading/Error States</li>
+                            <li>Optimistic UI</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 7: Database Schema -->
+        <div class="slide slide-7">
+            <h2>🗄️ Схема базы данных</h2>
+            <div class="content">
+                <div class="grid-3">
+                    <div class="card">
+                        <h3>👤 Users</h3>
+                        <p style="font-size: 0.9rem; opacity: 0.9;">id, email, password, firstName, lastName, phone, role</p>
+                    </div>
+                    <div class="card">
+                        <h3>📦 Products</h3>
+                        <p style="font-size: 0.9rem; opacity: 0.9;">id, name, description, price, brand, imageUrl, specs, categoryId</p>
+                    </div>
+                    <div class="card">
+                        <h3>📂 Categories</h3>
+                        <p style="font-size: 0.9rem; opacity: 0.9;">id, name, slug, description, parentId</p>
+                    </div>
+                    <div class="card">
+                        <h3>🛒 Cart</h3>
+                        <p style="font-size: 0.9rem; opacity: 0.9;">id, userId, items (CartItems)</p>
+                    </div>
+                    <div class="card">
+                        <h3>📝 Orders</h3>
+                        <p style="font-size: 0.9rem; opacity: 0.9;">id, userId, status, totalAmount, shippingAddress</p>
+                    </div>
+                    <div class="card">
+                        <h3>⭐ Reviews</h3>
+                        <p style="font-size: 0.9rem; opacity: 0.9;">id, productId, userId, rating, title, comment</p>
+                    </div>
+                    <div class="card">
+                        <h3>❤️ Favorites</h3>
+                        <p style="font-size: 0.9rem; opacity: 0.9;">id, userId, productId</p>
+                    </div>
+                    <div class="card">
+                        <h3>🛍️ CartItems</h3>
+                        <p style="font-size: 0.9rem; opacity: 0.9;">id, cartId, productId, quantity, price</p>
+                    </div>
+                    <div class="card">
+                        <h3>📦 OrderItems</h3>
+                        <p style="font-size: 0.9rem; opacity: 0.9;">id, orderId, productId, quantity, price</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 8: Testing Results -->
+        <div class="slide slide-8">
+            <h2>✅ Результаты тестирования</h2>
+            <div class="content">
+                <div class="stat-grid" style="margin-bottom: 40px;">
+                    <div class="stat">
+                        <span class="stat-number">217</span>
+                        <span class="stat-label">Всего тестов</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-number">188</span>
+                        <span class="stat-label">Passed (87%)</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-number">29</span>
+                        <span class="stat-label">Pending (13%)</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-number">0</span>
+                        <span class="stat-label">Failed (0%)</span>
+                    </div>
+                </div>
+
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Категория</th>
+                            <th>Всего</th>
+                            <th>Passed</th>
+                            <th>Pending</th>
+                            <th>%</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Функциональные</td>
+                            <td>67</td>
+                            <td>59</td>
+                            <td>8</td>
+                            <td>88%</td>
+                        </tr>
+                        <tr>
+                            <td>UI</td>
+                            <td>44</td>
+                            <td>40</td>
+                            <td>4</td>
+                            <td>91%</td>
+                        </tr>
+                        <tr>
+                            <td>Responsive</td>
+                            <td>20</td>
+                            <td>20</td>
+                            <td>0</td>
+                            <td>100%</td>
+                        </tr>
+                        <tr>
+                            <td>Производительность</td>
+                            <td>13</td>
+                            <td>12</td>
+                            <td>1</td>
+                            <td>92%</td>
+                        </tr>
+                        <tr>
+                            <td>Юзабилити</td>
+                            <td>12</td>
+                            <td>12</td>
+                            <td>0</td>
+                            <td>100%</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Slide 9: CI/CD Pipeline -->
+        <div class="slide slide-9">
+            <h2>🚀 CI/CD & Deployment</h2>
+            <div class="content">
+                <div class="grid-2">
+                    <div class="card">
+                        <h3>Backend Pipeline</h3>
+                        <ul>
+                            <li>ESLint code quality</li>
+                            <li>Jest unit tests (85% coverage)</li>
+                            <li>SonarCloud analysis</li>
+                            <li>Docker build</li>
+                            <li>Auto-deploy to Render</li>
+                        </ul>
+                        <p style="margin-top: 20px; font-weight: 600;">✅ All checks passed</p>
+                    </div>
+                    <div class="card">
+                        <h3>Frontend Pipeline</h3>
+                        <ul>
+                            <li>ESLint + Prettier</li>
+                            <li>Vite build</li>
+                            <li>Bundle optimization</li>
+                            <li>Auto-deploy to Vercel</li>
+                            <li>Preview deployments</li>
+                        </ul>
+                        <p style="margin-top: 20px; font-weight: 600;">✅ All checks passed</p>
+                    </div>
+                </div>
+
+                <div class="card" style="margin-top: 30px;">
+                    <h3 style="text-align: center;">Code Quality (SonarCloud)</h3>
+                    <div style="display: flex; justify-content: space-around; margin-top: 20px; flex-wrap: wrap; gap: 30px;">
+                        <div style="text-align: center;">
+                            <div style="font-size: 3rem; color: #10B981; margin-bottom: 5px;">A</div>
+                            <p style="font-size: 0.9rem;">Maintainability</p>
+                        </div>
+                        <div style="text-align: center;">
+                            <div style="font-size: 3rem; color: #10B981; margin-bottom: 5px;">A</div>
+                            <p style="font-size: 0.9rem;">Reliability</p>
+                        </div>
+                        <div style="text-align: center;">
+                            <div style="font-size: 3rem; color: #10B981; margin-bottom: 5px;">A</div>
+                            <p style="font-size: 0.9rem;">Security</p>
+                        </div>
+                        <div style="text-align: center;">
+                            <div style="font-size: 3rem; color: #10B981; margin-bottom: 5px;">0</div>
+                            <p style="font-size: 0.9rem;">Bugs</p>
+                        </div>
+                        <div style="text-align: center;">
+                            <div style="font-size: 3rem; color: #10B981; margin-bottom: 5px;">0</div>
+                            <p style="font-size: 0.9rem;">Vulnerabilities</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 10: Conclusion -->
+        <div class="slide slide-10">
+            <h2>🎉 Итоги и достижения</h2>
+            <div class="content">
+                <div class="card" style="margin-bottom: 30px;">
+                    <h3 style="text-align: center; font-size: 1.8rem; margin-bottom: 20px;">✅ Проект "ТехноМарт" успешно завершён!</h3>
+                    <p style="text-align: center; font-size: 1.2rem; margin-bottom: 30px;">Все 9 лабораторных работ выполнены на 100%</p>
+                    
+                    <div class="grid-2" style="margin-top: 30px;">
+                        <div>
+                            <h4 style="color: #10B981; margin-bottom: 15px;">📦 Deliverables:</h4>
+                            <ul style="list-style: none; padding: 0;">
+                                <li style="padding: 8px 0;">✓ Полный Backend API (24 endpoints)</li>
+                                <li style="padding: 8px 0;">✓ React Frontend (10 pages, 30+ components)</li>
+                                <li style="padding: 8px 0;">✓ PostgreSQL Database (9 tables)</li>
+                                <li style="padding: 8px 0;">✓ UML Диаграммы (15 типов)</li>
+                                <li style="padding: 8px 0;">✓ Style Guide & Prototypes</li>
+                                <li style="padding: 8px 0;">✓ Usability Testing Report</li>
+                                <li style="padding: 8px 0;">✓ CI/CD Pipeline (GitHub Actions)</li>
+                                <li style="padding: 8px 0;">✓ Финальный отчёт (13 разделов)</li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h4 style="color: #10B981; margin-bottom: 15px;">🏆 Achievements:</h4>
+                            <ul style="list-style: none; padding: 0;">
+                                <li style="padding: 8px 0;">✓ Lighthouse: 94/100</li>
+                                <li style="padding: 8px 0;">✓ SUS Score: 78.1 (Good)</li>
+                                <li style="padding: 8px 0;">✓ Test Coverage: 85%</li>
+                                <li style="padding: 8px 0;">✓ SonarCloud: All A ratings</li>
+                                <li style="padding: 8px 0;">✓ 0 Critical Bugs</li>
+                                <li style="padding: 8px 0;">✓ 217 Tests (87% passed)</li>
+                                <li style="padding: 8px 0;">✓ Production Ready</li>
+                                <li style="padding: 8px 0;">✓ 150+ Git Commits</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3 style="text-align: center; margin-bottom: 20px;">🔗 Ссылки на проект</h3>
+                    <div style="text-align: center;">
+                        <p style="margin: 10px 0;"><strong>Frontend:</strong> https://technomart.vercel.app</p>
+                        <p style="margin: 10px 0;"><strong>Backend API:</strong> https://technomart-api.onrender.com</p>
+                        <p style="margin: 10px 0;"><strong>API Docs:</strong> https://technomart-api.onrender.com/api/docs</p>
+                        <p style="margin: 10px 0;"><strong>GitHub:</strong> github.com/korochki/technomart</p>
+                    </div>
+                </div>
+
+                <div style="text-align: center; margin-top: 40px;">
+                    <h3 style="color: white; font-size: 2rem;">Спасибо за внимание! 🙏</h3>
+                    <p style="margin-top: 15px; font-size: 1.1rem; opacity: 0.9;">Команда korochki | Группа 11а-3 | БГУ ФПМИ</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Navigation Dots -->
+    <div class="navigation">
+        <div class="nav-dot active" data-slide="0"></div>
+        <div class="nav-dot" data-slide="1"></div>
+        <div class="nav-dot" data-slide="2"></div>
+        <div class="nav-dot" data-slide="3"></div>
+        <div class="nav-dot" data-slide="4"></div>
+        <div class="nav-dot" data-slide="5"></div>
+        <div class="nav-dot" data-slide="6"></div>
+        <div class="nav-dot" data-slide="7"></div>
+        <div class="nav-dot" data-slide="8"></div>
+        <div class="nav-dot" data-slide="9"></div>
+    </div>
+
+    <script>
+        // Navigation
+        const slides = document.querySelectorAll('.slide');
+        const navDots = document.querySelectorAll('.nav-dot');
+        const presentation = document.querySelector('.presentation');
+
+        // Smooth scroll to slide
+        navDots.forEach((dot, index) => {
+            dot.addEventListener('click', () => {
+                slides[index].scrollIntoView({ behavior: 'smooth' });
+            });
+        });
+
+        // Update active dot on scroll
+        presentation.addEventListener('scroll', () => {
+            let current = 0;
+            slides.forEach((slide, index) => {
+                const rect = slide.getBoundingClientRect();
+                if (rect.top >= -100 && rect.top < window.innerHeight / 2) {
+                    current = index;
+                }
+            });
+
+            navDots.forEach((dot, index) => {
+                dot.classList.toggle('active', index === current);
+            });
+        });
+
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            let currentSlide = 0;
+            slides.forEach((slide, index) => {
+                const rect = slide.getBoundingClientRect();
+                if (rect.top >= -100 && rect.top < window.innerHeight / 2) {
+                    currentSlide = index;
+                }
+            });
+
+            if (e.key === 'ArrowDown' || e.key === 'ArrowRight') {
+                e.preventDefault();
+                if (currentSlide < slides.length - 1) {
+                    slides[currentSlide + 1].scrollIntoView({ behavior: 'smooth' });
+                }
+            } else if (e.key === 'ArrowUp' || e.key === 'ArrowLeft') {
+                e.preventDefault();
+                if (currentSlide > 0) {
+                    slides[currentSlide - 1].scrollIntoView({ behavior: 'smooth' });
+                }
+            }
+        });
+    </script>
+</body>
+</html>
+
