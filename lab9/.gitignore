@@ -5,8 +5,8 @@ node_modules/
 dist/
 build/
 
-# Database (local development only)
-backend/data/*.db
+# Database - NOT ignored, needed for initial data on deploy
+# backend/data/*.db
 
 # Environment variables
 .env

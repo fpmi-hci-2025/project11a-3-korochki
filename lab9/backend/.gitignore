@@ -1,8 +1,8 @@
 # Dependencies
 node_modules/
 
-# Database (created on first run)
-data/*.db
+# Database - NOT ignored, needed for initial data on deploy
+# data/*.db
 
 # Environment
 .env
