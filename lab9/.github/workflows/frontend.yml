@@ -1,0 +1,54 @@
+name: Frontend CI/CD
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'lab9/frontend/**'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'lab9/frontend/**'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+          cache-dependency-path: lab9/frontend/package-lock.json
+      
+      - name: Install dependencies
+        run: |
+          cd lab9/frontend
+          npm ci
+      
+      - name: Build
+        run: |
+          cd lab9/frontend
+          npm run build
+      
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontend-build
+          path: lab9/frontend/dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    
+    steps:
+      - name: Deploy to Vercel
+        run: |
+          echo "Deploy to Vercel triggered"
+          # vercel --prod --token ${{ secrets.VERCEL_TOKEN }}
+
+

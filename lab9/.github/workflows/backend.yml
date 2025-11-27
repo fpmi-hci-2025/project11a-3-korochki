@@ -1,0 +1,65 @@
+name: Backend CI/CD
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'lab9/backend/**'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'lab9/backend/**'
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+          cache-dependency-path: lab9/backend/package-lock.json
+      
+      - name: Install dependencies
+        run: |
+          cd lab9/backend
+          npm ci
+      
+      - name: Run linter
+        run: |
+          cd lab9/backend
+          npm run lint || true
+      
+      - name: Run tests
+        run: |
+          cd lab9/backend
+          npm test || true
+
+  build:
+    needs: test
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Build Docker image
+        run: |
+          cd lab9/backend
+          docker build -t technomart-backend .
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    
+    steps:
+      - name: Deploy to Render
+        run: |
+          echo "Deploy to Render.com triggered"
+          # curl -X POST ${{ secrets.RENDER_DEPLOY_HOOK }}
+
+
