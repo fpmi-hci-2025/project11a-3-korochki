@@ -19,7 +19,7 @@ services:
       retries: 5
 
   backend:
-    build: ./backend
+    build: .
     container_name: technomart-backend
     environment:
       NODE_ENV: development

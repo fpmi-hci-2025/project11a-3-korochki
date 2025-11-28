@@ -1,27 +1,49 @@
 version: '3.8'
 
 services:
+  postgres:
+    image: postgres:14-alpine
+    container_name: technomart-db
+    environment:
+      POSTGRES_DB: technomart_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
   backend:
     build: ./backend
+    container_name: technomart-backend
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: technomart_db
+      DB_USER: postgres
+      DB_PASSWORD: postgres
+      JWT_SECRET: dev-secret-key-change-in-production
     ports:
       - "3000:3000"
-    environment:
-      - NODE_ENV=production
-      - PORT=3000
-      - JWT_SECRET=technomart-secret-key-2024
-    volumes:
-      - backend-data:/app/data
-    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    # Removed volume mounts for code to simulate production build
 
   frontend:
     build: ./frontend
+    container_name: technomart-frontend
     ports:
-      - "5173:80"
+      - "80:80"
     depends_on:
       - backend
-    restart: unless-stopped
 
 volumes:
-  backend-data:
-
-
+  postgres_data:

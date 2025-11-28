@@ -1,0 +1,29 @@
+@startuml
+!theme toy
+left to right direction
+
+package "Development Environment" {
+    node "Developer PC (Docker Host)" {
+        component "Backend Container" as Backend {
+            artifact "Backend App (Python/Node)"
+            database "DB Container (PostgreSQL)" as DB
+        }
+        component "Web Container" as Web {
+            artifact "Web App (React/Vue)"
+        }
+        component "SonarQube Container" as SQ
+        Backend --> DB : JDBC/ORM
+        Backend --> SQ : Code Analysis
+        Web .> Backend : API Calls
+    }
+}
+package "Production Environment (Render/Vercel)" {
+    cloud "Render/Vercel" {
+        component "Backend Service (Container)" as ProdBackend
+        database "Managed DB (Render Postgre)" as ProdDB
+        component "Web Static Hosting" as ProdWeb
+        ProdBackend --> ProdDB
+        ProdWeb .> ProdBackend
+    }
+}
+@enduml
